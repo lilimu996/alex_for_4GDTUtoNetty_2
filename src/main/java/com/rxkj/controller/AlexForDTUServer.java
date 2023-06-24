@@ -4,13 +4,11 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
-import com.rxkj.handler.ExceptionHandler;
-import com.rxkj.handler.HeartBeatServerHandler;
-import com.rxkj.handler.AlexForDTUHandler;
-import com.rxkj.handler.LoginRequestHandler;
-import com.rxkj.codec.ByteArrayDecoder;
-import com.rxkj.codec.ByteArrayEncoder;
-import io.netty.handler.codec.http.HttpObjectAggregator;
+import com.rxkj.handler.*;
+import com.rxkj.protocol.MessageCodecSharable;
+import com.rxkj.protocol.ProcotolFrameDecoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +61,12 @@ public class AlexForDTUServer {
     @Autowired
     private ExceptionHandler exceptionHandler;
 
+    LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
+
+    MessageCodecSharable  MESSAGE_CODEC = new MessageCodecSharable();
+
+    final QuitHandler QUIT_HANDLER = new QuitHandler();  //--断开连接---处理器
+
     /**
      * 启动服务
      * @param
@@ -88,18 +92,13 @@ public class AlexForDTUServer {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         ChannelPipeline pipeline = socketChannel.pipeline();
-                        //添加编解码和处理器(节点间通讯用)
-                        pipeline.addLast("deCoder", new ByteArrayDecoder())
-                                .addLast("enCoder", new ByteArrayEncoder())
-                                .addLast("aggregator", new HttpObjectAggregator(512 * 1024))
-                                //数据接收处理器
-                                .addLast("alexhandler", new AlexForDTUHandler())
-                                //管理后台登录
-                                .addLast("loginHandler", loginRequestHandler)
-                                //心跳检测
-                                .addLast("heartBeat", new HeartBeatServerHandler())
+                        pipeline.addLast(new ProcotolFrameDecoder()) // 帧解码器 【与自定义编解码器 MessageCodecSharable一起配置参数】
+                                .addLast(LOGGING_HANDLER)//日志
+                                .addLast(MESSAGE_CODEC)
                                 //异常处理
-                                .addLast("exception", exceptionHandler);
+                                .addLast("exception", exceptionHandler)
+                                //空闲检测
+                                .addLast(new NettyServerHandler());
 
                     }
                 });

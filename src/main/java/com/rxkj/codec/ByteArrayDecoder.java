@@ -2,15 +2,19 @@ package com.rxkj.codec;
 
 import java.util.List;
 
+import com.rxkj.check.DataCheckFormat;
 import com.rxkj.util.AlexSatic;
 import com.rxkj.util.AlexUtil;
 import org.apache.commons.codec.binary.Hex;
+import org.hibernate.type.TrueFalseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+
+import javax.xml.crypto.Data;
 
 /**
  * byte     1字节    （8位） -27~27-1 0 Byte 255
@@ -32,7 +36,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 public class ByteArrayDecoder extends ByteToMessageDecoder{
 
     private static Logger log = LoggerFactory.getLogger(ByteArrayDecoder.class);
-
+    DataCheckFormat dataCheckFormat=new DataCheckFormat();
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         // 标记一下当前的readIndex的位置
@@ -86,8 +90,22 @@ public class ByteArrayDecoder extends ByteToMessageDecoder{
         byte[] ad = new byte[in.readableBytes()];
         in.readBytes(ad, 0, in.readableBytes());
         //心跳：alex01 （616c65783031） , 数据头：alex01-data: （616c657830312d646174613a）
-        String hexstr = AlexUtil.bytesToHexString(ad);
-        log.info("hexstr:"+hexstr);
+        //String hexstr = AlexUtil.bytesToHexString(ad);
+        log.info("ad:"+AlexUtil.bytesToHexString(ad));
+        //判断数据包是否合法
+        if(true){
+            if (DataCheckFormat.isBeat(ad)) {
+                //是心跳消息
+                //String heartbeatstr = AlexUtil.hexStringToString(hexstr);
+                log.info("接收到心跳信息:" + AlexUtil.bytesToHexString(ad));
+                out.add(ad);
+            }else {
+                //数据信息
+                //String datahexstr = hexstr.replaceFirst(AlexUtil.stringToHexString(AlexSatic.DATA_HEAD).toUpperCase(),"");
+                log.info("接收到数据" + AlexUtil.bytesToHexString(ad));
+                out.add(ad);
+            }
+        }
         // log.info("alex01hex:"+hexstr.indexOf(""));
         // log.info("combool="+hexstr.regionMatches(2,"6C65",0,3));
         /*if (hexstr.length() == 12 && AlexUtil.hexStringToString(hexstr).indexOf(AlexSatic.PROTOCOL_HEAD) >= 0) {
@@ -110,27 +128,25 @@ public class ByteArrayDecoder extends ByteToMessageDecoder{
         }*/
         //心跳:AAAA08NNNN02NNNN  AAAA0823D50200FF
         //数据:AAAA07NNNN03NN AAAA0724D403FF
-        if (hexstr.length() == 16 &&hexstr.regionMatches(10,"02",0,2)) {
-            //是心跳消息
-            //String heartbeatstr = AlexUtil.hexStringToString(hexstr);
-            log.info("接收到心跳信息:" + hexstr);
-            out.add(hexstr);
-        }else {
-            //数据信息
-            //String datahexstr = hexstr.replaceFirst(AlexUtil.stringToHexString(AlexSatic.DATA_HEAD).toUpperCase(),"");
-                log.info("接收到数据" + hexstr);
-                out.add(hexstr);
-        }
+
 
     }
 
     public static void main(String[] args) {
-        String s = AlexUtil.stringToHexString("alex01");
-        String s1 = AlexUtil.stringToHexString("alex01-data:");
-        System.out.println(s + ":" + s.length());
-        System.out.println(s1 + ":" + s1.length());
-        System.out.println(AlexUtil.hexStringToString("616C657830312D646174613A"));
+//        String s = AlexUtil.stringToHexString("alex01");
+//        String s1 = AlexUtil.stringToHexString("alex01-data:");
+        //byte[] s=new byte[]{(byte)0xAA,(byte) 0xAA};
+        byte[] beata=new byte[]{(byte)0xAA,(byte) 0xAA,(byte)0x08,(byte) 0x00,(byte)0x00,(byte) 0x02,(byte) 0x00,(byte)0x00};
+//        String beatas=AlexUtil.bytesToHexString(beata);
+//        System.out.println(beata[2]);
+//        beatas.indexOf(2);
+          System.out.println(DataCheckFormat.isBeat(beata));
+        //beata=AlexUtil.checksum()
+        //String s1=AlexUtil.bytesToHexString(s);
+        //System.out.println(s + ":" + s.length());
+        //System.out.println(s1 + ":" + s1.length());
+        //System.out.println(AlexUtil.hexStringToString("616C657830312D646174613A"));
 
-        System.out.println("dd:" + "616c657830312d646174613a".toUpperCase());
+        //System.out.println("dd:" + "616c657830312d646174613a".toUpperCase());
     }
 }

@@ -74,8 +74,8 @@ public class AlexForDTUHandler extends SimpleChannelInboundHandler<FullHttpReque
      * @param msg
      * @throws Exception
      */
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    //@Override
+    /*public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // 将该设备的通信管道对象保存
         System.out.println("msg: " + ((String) msg));
         if (((String) msg).indexOf("alex") >= 0){
@@ -86,8 +86,17 @@ public class AlexForDTUHandler extends SimpleChannelInboundHandler<FullHttpReque
             }
         }
         //后续业务处理
+    }*/
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        // 将该设备的通信管道对象保存
+        log.info("心跳msg: " + AlexUtil.bytesToHexString((byte[]) msg));
+        if (true){
+            // Todo:如果是心跳，上传设备状态
+        }
+        //super.channelRead0(ctx,msg);
+        //后续业务处理
     }
-
 
     /**
      * 当该设备（客户端）断开连接时，调用移除已失效的通信管道对象
@@ -106,7 +115,7 @@ public class AlexForDTUHandler extends SimpleChannelInboundHandler<FullHttpReque
      */
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("通信管道接收完数据了...");
+        log.info("通信管道接收完数据了...");
         ctx.flush();
         /*super.channelReadComplete(ctx);
         ctx.flush(); // 4*/
