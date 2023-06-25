@@ -95,6 +95,7 @@ public class AlexForDTUServer {
                         pipeline.addLast(new ProcotolFrameDecoder()) // 帧解码器 【与自定义编解码器 MessageCodecSharable一起配置参数】
                                 .addLast(LOGGING_HANDLER)//日志
                                 .addLast(MESSAGE_CODEC)
+                                .addLast(new MessageClassifyHandler())//消息分类
                                 //异常处理
                                 .addLast("exception", exceptionHandler)
                                 //空闲检测

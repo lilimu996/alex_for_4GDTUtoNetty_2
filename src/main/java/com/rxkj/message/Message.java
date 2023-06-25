@@ -52,9 +52,14 @@ public abstract class Message implements Serializable {
     private static final Map<Integer, Class<?>> messageClasses = new HashMap<>();
     static {
         messageClasses.put(MessageA, MessageA.class);
-
-
-
-
+        messageClasses.put(LoginResponseMessage,LoginResponseMessage.class);
+        messageClasses.put(IdentityMessage,IdentityMessage.class);
+        messageClasses.put(StatusMessage,StatusMessage.class);
+        messageClasses.put(ControlMessage,ControlMessage.class);
+        messageClasses.put(MaintenanceMessage,MaintenanceMessage.class);
+        messageClasses.put(ModifyMessage,ModifyMessage.class);
+        messageClasses.put(ResponseMessage,ResponseMessage.class);
+        messageClasses.put(PingMessage,PingMessage.class);
+        messageClasses.put(PongMessage,PongMessage.class);
     }
 }

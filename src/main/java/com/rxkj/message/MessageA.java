@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.ToString;
 
 @Data
-@ToString(callSuper = true)
+//@ToString(callSuper = true)
 public  class MessageA extends Message {
     /*
     所有的消息都是MessageA
