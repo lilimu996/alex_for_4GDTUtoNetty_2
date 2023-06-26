@@ -20,10 +20,11 @@ public class DeviceIdentityHandler extends SimpleChannelInboundHandler<IdentityM
         //#todo:将设备信息保存至数据库
         //回复客服端
         // log.info("CommandEnum "+CommandEnum.UPLOAD_COMMAND.value);
-
+        //#todo:更新checksum
+        String checksum="0000";
         String data= CommandEnum.UPLOAD_COMMAND.value+TimeoutEnum.COMMON_TIMEOUT.value;
         MessageA messageA=new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.RESPONSE_COMMAND.value,
-                KeywordEnum.CHECKSUM.value,CommandEnum.RESPONSE_COMMAND.value,data);
+                checksum,CommandEnum.RESPONSE_COMMAND.value,data);
         log.info("responsemsg  "+messageA);
         ctx.writeAndFlush(messageA);
 

@@ -1,6 +1,7 @@
 package com.rxkj.protocol;
 
 import com.rxkj.check.DataCheckFormat;
+import com.rxkj.enums.KeywordEnum;
 import com.rxkj.message.MessageOld;
 import com.rxkj.message.MessageA;
 import com.rxkj.util.AlexUtil;
@@ -38,12 +39,12 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         log.info("开始encode-------------------");
         ByteBuf out = ctx.alloc().buffer();
         //写入魔数
-        out.writeBytes(AlexUtil.hexStringToByteArray(msg.getMagic()));
+        out.writeBytes(AlexUtil.hexStringToByteArray(KeywordEnum.CHANNEL_HEAD.value));
 
         //写入长度
-        log.info("hexst "+Integer.toString(msg.getLength()));
+//        log.info("hexst "+Integer.toString(msg.getLength()));
         out.writeBytes(AlexUtil.hexStringToByteArray3(Integer.toHexString(msg.getLength())));
-        log.info("updata to there  ");
+//        log.info("updata to there  ");
         //# todo 更新校验码
         out.writeBytes(AlexUtil.hexStringToByteArray(msg.getChecksum()));
         //# todo 指令

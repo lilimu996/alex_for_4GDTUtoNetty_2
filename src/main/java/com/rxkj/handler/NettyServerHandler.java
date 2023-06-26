@@ -1,6 +1,9 @@
 package com.rxkj.handler;
 
 import com.rxkj.Mapper.ChannelMap;
+import com.rxkj.enums.CommandEnum;
+import com.rxkj.enums.CommandLengthEnum;
+import com.rxkj.enums.KeywordEnum;
 import com.rxkj.message.MessageA;
 import com.rxkj.message.MessageOld;
 import com.rxkj.util.AlexUtil;
@@ -43,16 +46,18 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             ChannelMap.addChannel(channelId, ctx.channel());
             log.info("客户端:{},连接netty服务器[IP:{}-->PORT:{}]",channelId, clientIp,clientPort);
             log.info("连接通道数量: {}",ChannelMap.getChannelMap().size());
-            byte[] magic={(byte) 0xAA,(byte) 0xAA};
-            String magichex= AlexUtil.bytesToHexString(magic);
+//            byte[] magic={(byte) 0xAA,(byte) 0xAA};
+//            String magichex= AlexUtil.bytesToHexString(magic);
             byte[] checkSum={(byte) 0x00,(byte) 0x00};
             String checksumhex=AlexUtil.bytesToHexString(checkSum);
-            byte[] command={(byte) 0x00};
-            String commandhex=AlexUtil.bytesToHexString(command);
-            byte[] datas={(byte) 0x33,(byte) 0x33};
-            String datashex=AlexUtil.bytesToHexString(datas);
-            int lengthDec=10;
-            MessageA message=new MessageA(magichex,lengthDec,checksumhex,commandhex,datashex);
+            //#todo:更新checksumhex;
+//            byte[] command={(byte) 0x00};
+//            String commandhex=AlexUtil.bytesToHexString(command);
+            /*byte[] datas={(byte) 0x33,(byte) 0x33,(byte) 0x33,(byte) 0x33};
+            String datashex=AlexUtil.bytesToHexString(datas);*/
+//            int lengthDec=10;
+            MessageA message=new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.START_LENGTH.value,
+                    checksumhex, CommandEnum.START_COMMAND.value, KeywordEnum.CHECKSUM.value);
             log.info("启动消息"+message);
             //发送启动指令
 //            System.out.println("Client connected: " + ctx.channel().remoteAddress());
