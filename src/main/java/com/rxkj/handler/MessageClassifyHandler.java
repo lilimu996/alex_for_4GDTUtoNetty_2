@@ -22,7 +22,10 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
         //从MessageA中读取command，根据command将Message分类成不同的消息
         switch (command){
             case "01":
-                IdentityMessage identityMessage =new IdentityMessage(magic,length,checksum,command,data);
+                String imei=data.substring(0,30);
+                String iccid=data.substring(30,70);
+                String dtuv=data.substring(70,78);
+                IdentityMessage identityMessage =new IdentityMessage(imei,iccid,dtuv);
                 log.info("identityMessage  "+identityMessage.getMessageType());
                 ctx.fireChannelRead(identityMessage);
                 break;

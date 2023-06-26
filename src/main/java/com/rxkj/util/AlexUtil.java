@@ -92,6 +92,25 @@ public class AlexUtil {
         }
         return byteArray;
     }
+    public static byte[] hexStringToByteArray3(String hexString) {
+        hexString = hexString.replaceAll("\\s+", ""); // Remove any whitespace
+
+        // Check if the length of the input string is odd
+        if (hexString.length() % 2 != 0) {
+            hexString = "0" + hexString; // Prepend a '0' if necessary
+        }
+
+        byte[] byteArray = new byte[hexString.length() / 2];
+
+        for (int i = 0; i < hexString.length(); i += 2) {
+            String hex = hexString.substring(i, i + 2);
+            byteArray[i / 2] = (byte) Integer.parseInt(hex, 16);
+        }
+
+        return byteArray;
+    }
+
+
 
 
 

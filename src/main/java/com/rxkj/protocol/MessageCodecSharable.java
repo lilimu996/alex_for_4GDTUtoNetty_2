@@ -8,6 +8,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -33,15 +34,21 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
 
     @Override
     protected void encode(ChannelHandlerContext ctx, MessageA msg, List<Object> outlist) throws Exception {
+        //开始encode
+        log.info("开始encode-------------------");
         ByteBuf out = ctx.alloc().buffer();
         //写入魔数
         out.writeBytes(AlexUtil.hexStringToByteArray(msg.getMagic()));
+
         //写入长度
-        out.writeBytes(AlexUtil.hexStringToByteArray2(Integer.toString(msg.getLength())));
+        log.info("hexst "+Integer.toString(msg.getLength()));
+        out.writeBytes(AlexUtil.hexStringToByteArray3(Integer.toHexString(msg.getLength())));
+        log.info("updata to there  ");
         //# todo 更新校验码
         out.writeBytes(AlexUtil.hexStringToByteArray(msg.getChecksum()));
         //# todo 指令
         out.writeBytes(AlexUtil.hexStringToByteArray(msg.getCommand()));
+
         //# todo 数据
         out.writeBytes(AlexUtil.hexStringToByteArray(msg.getData()));
         System.out.println("经过encode-------------");
@@ -57,7 +64,9 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         //获取长度
         byte[] length=new byte[1];
         msg.readBytes(length);
-        int lengthDec=Integer.parseInt(AlexUtil.bytesToHexString(length));
+        //log.info("decode length  "+AlexUtil.bytesToHexString(length));
+        int lengthDec=Integer.parseInt(AlexUtil.bytesToHexString(length),16);
+        log.info("lenthDec  "+lengthDec);
         //获取校验
         byte[] checksum=new byte[2];
         msg.readBytes(checksum);
@@ -96,31 +105,24 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
     }
 
     public static void main(String[] args) throws IOException {
-        int decimal = 10;
+        /*int decimal = 10;
         String hexString = Integer.toHexString(decimal);
         System.out.println(hexString); // Output: A
         int length=10;
-        log.info("hexStringl "+AlexUtil.hexStringToByteArray(Integer.toHexString(length)));
+        log.info("hexStringl "+AlexUtil.hexStringToByteArray(Integer.toHexString(length)));*/
+//        int length=Integer.parseInt("8",16);
+//        System.out.println(length);
+//        String hexString=Integer.toString(10);
+//
+//        log.info("num   "+hexString);
+        //log.info("num "+ Integer.toString(56));
 
-        /*byte[] bytes=new byte[2];
-        bytes[0]=0x00;bytes[1]=0x00;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream= new ObjectOutputStream(out);
-        objectOutputStream.write(bytes);
-        objectOutputStream.flush();
-
-        ObjectInput input = new ObjectInputStream(new ByteArrayInputStream(out.toByteArray()));*/
+        String hex=Integer.toHexString(45);
+        log.info("string "+hex);
+        AlexUtil.hexStringToByteArray3(hex);
 
 
 
-        /*byte[] bytes=new byte[2];
-        bytes[0]=0x00;bytes[1]=0x00;
-        try{
-            ByteArrayInputStream bas=new ByteArrayInputStream(bytes);
-            ObjectInputStream oi=new ObjectInputStream(bas);
-        }catch (Exception e){
-            e.printStackTrace();
-        }*/
 
 
 

@@ -1,8 +1,17 @@
 package com.rxkj.message;
 
-public class IdentityMessage extends MessageA{
-    public IdentityMessage(String magic, int length, String checksum, String command, String data) {
-        super(magic, length, checksum, command, data);
+import lombok.Data;
+
+@Data
+public class IdentityMessage extends Message{
+
+    private String imei;
+    private String iccid;
+    private String dtuv;
+    public IdentityMessage(String imei,String iccid,String dtuv){
+        this.imei=imei;
+        this.iccid=iccid;
+        this.dtuv=dtuv;
     }
     public int getMessageType() {
         return IdentityMessage;
