@@ -30,7 +30,11 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 ctx.fireChannelRead(identityMessage);
                 break;
             case "02"://设备状态信息，作为心跳包周期性上传，如状态发生变化立即上传
-                StatusMessage statusMessage=new StatusMessage(magic,length,checksum,command,data);
+                //#todo:deviceId为预留字段，为以后的多台设备做准备
+                String deviceId="01";
+                String auxiliaryCoils=data.substring(0,2);
+                String outputCoil=data.substring(2,4);
+                StatusMessage statusMessage=new StatusMessage(deviceId,auxiliaryCoils,outputCoil);
                 log.info("StatusMessage  "+statusMessage.getMessageType());
                 ctx.fireChannelRead(statusMessage);
                 break;

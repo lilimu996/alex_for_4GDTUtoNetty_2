@@ -1,10 +1,18 @@
 package com.rxkj.message;
 
 import com.alibaba.druid.support.spring.stat.annotation.Stat;
+import lombok.Data;
 
-public class StatusMessage extends MessageA{
-    public StatusMessage(String magic, int length, String checksum, String command, String data) {
-        super(magic, length, checksum, command, data);
+@Data
+public class StatusMessage extends Message{
+
+    private String deviceId;
+    private String auxiliaryCoils;
+    private String outputCoil;
+    public StatusMessage(String deviceId,String auxiliaryCoils,String outputCoil){
+        this.deviceId=deviceId;
+        this.auxiliaryCoils=auxiliaryCoils;
+        this.outputCoil=outputCoil;
     }
     public int getMessageType() {
         return StatusMessage;

@@ -97,6 +97,7 @@ public class AlexForDTUServer {
                                 .addLast(MESSAGE_CODEC)
                                 .addLast(new MessageClassifyHandler())//消息分类
                                 .addLast(new DeviceIdentityHandler())//设备上传身份指令，服务器回复应答
+                                .addLast(new PlcStatusHandler())//状态信息
                                 //异常处理
                                 .addLast("exception", exceptionHandler)
                                 //空闲检测
