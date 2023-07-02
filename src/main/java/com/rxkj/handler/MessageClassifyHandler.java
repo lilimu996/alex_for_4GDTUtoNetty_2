@@ -39,9 +39,9 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 ctx.fireChannelRead(statusMessage);
                 break;
             case "03":
-                ControlMessage controlMessage=new ControlMessage(magic,length,checksum,command,data);
+                /*ControlMessage controlMessage=new ControlMessage(deviceId,command);
                 log.info("controlMessage "+controlMessage.getMessageType());
-                ctx.fireChannelRead(controlMessage);
+                ctx.fireChannelRead(controlMessage);*/
                 break;
             case "04":
                 MaintenanceMessage maintenanceMessage =new MaintenanceMessage(magic,length,checksum,command,data);

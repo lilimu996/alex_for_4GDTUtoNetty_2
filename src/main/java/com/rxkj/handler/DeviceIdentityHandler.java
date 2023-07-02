@@ -18,6 +18,7 @@ public class DeviceIdentityHandler extends SimpleChannelInboundHandler<IdentityM
     protected void channelRead0(ChannelHandlerContext ctx, IdentityMessage msg) throws Exception {
         //log.info("身份信息  "+msg);
         //#todo:将设备信息保存至数据库
+        //#todo:绑定设备和channel,便于调用
         //回复客服端
         // log.info("CommandEnum "+CommandEnum.UPLOAD_COMMAND.value);
         //#todo:更新checksum
