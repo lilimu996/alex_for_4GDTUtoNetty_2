@@ -7,8 +7,9 @@ public enum CommandEnum {
    //AlexUtil.bytesToHexString(new byte[]{(byte) 0x00})
     START_COMMAND("00","启动连接"),
     //AlexUtil.bytesToHexString(new byte[]{(byte) 0x01})
-    UPLOAD_COMMAND("01","DTU上传身份"),
+    UPLOAD_IDENTITY_COMMAND("01","DTU上传身份"),
     //AlexUtil.bytesToHexString(new byte[]{(byte) 0xFE})
+    UPLOAD_STATUS_COMMAND("02","上传设备状态"),
     RESPONSE_COMMAND("FE","指令回复"),
     ;
     public final String value;

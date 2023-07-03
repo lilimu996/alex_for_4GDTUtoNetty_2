@@ -1,4 +1,4 @@
-package com.rxkj.handler;
+package com.rxkj.server.handler;
 
 import com.rxkj.message.*;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,9 +31,9 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 break;
             case "02"://设备状态信息，作为心跳包周期性上传，如状态发生变化立即上传
                 //#todo:deviceId为预留字段，为以后的多台设备做准备
-                String deviceId="01";
-                String auxiliaryCoils=data.substring(0,2);
-                String outputCoil=data.substring(2,4);
+                String deviceId=data.substring(0,2);
+                String auxiliaryCoils=data.substring(2,4);
+                String outputCoil=data.substring(4,6);
                 StatusMessage statusMessage=new StatusMessage(deviceId,auxiliaryCoils,outputCoil);
                 log.info("StatusMessage  "+statusMessage.getMessageType());
                 ctx.fireChannelRead(statusMessage);

@@ -1,5 +1,6 @@
-package com.rxkj.handler;
+package com.rxkj.server.handler;
 
+import com.rxkj.server.session.SessionFactory;
 import com.rxkj.util.AlexUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -63,6 +64,9 @@ public class AlexForDTUHandler extends SimpleChannelInboundHandler<FullHttpReque
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         removeChannelMap(ctx);
+        // 解绑
+        //客户端主动退出需要解绑
+        SessionFactory.getSession().unbind(ctx.channel());
         super.channelInactive(ctx);
     }
 
@@ -131,6 +135,8 @@ public class AlexForDTUHandler extends SimpleChannelInboundHandler<FullHttpReque
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         System.out.println("捕获异常信息。。。");
+        //客户端异常退出
+        SessionFactory.getSession().unbind(ctx.channel());
         if(null != cause) cause.printStackTrace();
         if(null != ctx) ctx.close();
     }

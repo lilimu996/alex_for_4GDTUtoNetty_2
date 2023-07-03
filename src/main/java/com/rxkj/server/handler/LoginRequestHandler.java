@@ -1,4 +1,4 @@
-package com.rxkj.handler;
+package com.rxkj.server.handler;
 
 import com.rxkj.util.CharacterConvert;
 import com.rxkj.util.ProtoInstant;

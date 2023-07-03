@@ -1,12 +1,11 @@
 package com.rxkj.controller;
 
 import com.rxkj.common.R;
-import com.rxkj.handler.AlexForDTUHandler;
+import com.rxkj.server.handler.AlexForDTUHandler;
 import com.rxkj.message.ControlMessage;
 import com.rxkj.message.StatusMessage;
 import com.rxkj.util.AlexUtil;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +19,7 @@ public class ApiController  {
 
     @PostMapping("/hello")
     public R<StatusMessage> hello(HttpServletRequest request, @RequestBody ControlMessage controlMessage){
+
         return R.error("this is e test error!");
     }
 

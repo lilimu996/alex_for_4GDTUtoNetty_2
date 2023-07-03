@@ -1,4 +1,4 @@
-package com.rxkj.handler;
+package com.rxkj.server.handler;
 
 import com.rxkj.Mapper.ChannelMap;
 import com.rxkj.enums.CommandEnum;
