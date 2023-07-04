@@ -4,9 +4,11 @@ import com.rxkj.common.R;
 import com.rxkj.server.handler.AlexForDTUHandler;
 import com.rxkj.message.ControlMessage;
 import com.rxkj.message.StatusMessage;
+import com.rxkj.server.service.PlcService;
 import com.rxkj.util.AlexUtil;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,9 +19,12 @@ import java.util.Map;
 @RequestMapping("api")
 public class ApiController  {
 
-    @PostMapping("/hello")
+    @Autowired
+    private PlcService plcService;
+    @PostMapping("/commandtoplc")
     public R<StatusMessage> hello(HttpServletRequest request, @RequestBody ControlMessage controlMessage){
-
+        //调用service将command转发给channel
+        plcService.controller();
         return R.error("this is e test error!");
     }
 
