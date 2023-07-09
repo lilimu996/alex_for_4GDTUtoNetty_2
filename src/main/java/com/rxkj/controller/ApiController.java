@@ -2,9 +2,9 @@ package com.rxkj.controller;
 
 import com.rxkj.common.R;
 import com.rxkj.server.handler.AlexForDTUHandler;
-import com.rxkj.message.ControlMessage;
+import com.rxkj.entity.ControlMessage;
 import com.rxkj.message.StatusMessage;
-import com.rxkj.server.service.PlcService;
+import com.rxkj.service.PlcService;
 import com.rxkj.util.AlexUtil;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +24,8 @@ public class ApiController  {
     @PostMapping("/commandtoplc")
     public R<StatusMessage> hello(HttpServletRequest request, @RequestBody ControlMessage controlMessage){
         //调用service将command转发给channel
-        plcService.controller();
-        return R.error("this is e test error!");
+        plcService.controller(controlMessage);
+        return R.error("this is a test!!");
     }
 
     @RequestMapping("/alex")

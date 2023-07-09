@@ -1,6 +1,8 @@
-package com.rxkj.message;
+package com.rxkj.entity;
 
-public class ControlMessage extends Message{
+import com.rxkj.message.Message;
+
+public class ControlMessage extends Message {
     String deviceId;
     String command;
     public ControlMessage(String deviceId,String command) {

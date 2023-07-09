@@ -18,7 +18,7 @@ spring:
       charset: utf-8
       enabled: true
 
-#mybatis配置
-mybatis.mapperLocations: classpath:mapper/*.xml
-mybatis.typeAliasesPackage: com.rxkj.entity
-#mybatis.configuration.cache-enabled: true
+##mybatis配置
+#mybatis.mapperLocations: classpath:mapper/*.xml
+#mybatis.typeAliasesPackage: com.rxkj.entity
+##mybatis.configuration.cache-enabled: true

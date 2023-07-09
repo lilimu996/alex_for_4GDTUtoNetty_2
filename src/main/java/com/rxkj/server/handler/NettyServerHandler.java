@@ -1,11 +1,11 @@
 package com.rxkj.server.handler;
 
-import com.rxkj.Mapper.ChannelMap;
+import com.rxkj.mapper.ChannelMap;
 import com.rxkj.enums.CommandEnum;
 import com.rxkj.enums.CommandLengthEnum;
 import com.rxkj.enums.KeywordEnum;
 import com.rxkj.message.MessageA;
-import com.rxkj.message.MessageOld;
+import com.rxkj.server.session.SessionFactory;
 import com.rxkj.util.AlexUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -82,6 +82,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         //包含此客户端才去删除
         if (ChannelMap.getChannelMap().containsKey(channelId)) {
             //删除连接
+            //删除session
+            SessionFactory.getSession().unbind(ctx.channel());
             ChannelMap.getChannelMap().remove(channelId);
             log.info("客户端:{},连接netty服务器[IP:{}-->PORT:{}]",channelId, clientIp,inSocket.getPort());
             log.info("连接通道数量: " + ChannelMap.getChannelMap().size());

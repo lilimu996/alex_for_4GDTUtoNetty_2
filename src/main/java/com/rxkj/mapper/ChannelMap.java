@@ -1,4 +1,4 @@
-package com.rxkj.Mapper;
+package com.rxkj.mapper;
 
 
 import io.netty.channel.Channel;
