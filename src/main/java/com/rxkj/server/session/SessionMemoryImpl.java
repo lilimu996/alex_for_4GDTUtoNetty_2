@@ -1,10 +1,11 @@
 package com.rxkj.server.session;
 
 import io.netty.channel.Channel;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
+@Slf4j
 public class SessionMemoryImpl implements Session {
 
     private final Map<String, Channel> usernameChannelMap = new ConcurrentHashMap<>();
@@ -15,6 +16,7 @@ public class SessionMemoryImpl implements Session {
     public void bind(Channel channel, String username) {
         usernameChannelMap.put(username, channel);
         channelUsernameMap.put(channel, username);
+        log.info("immid:"+username);
         channelAttributesMap.put(channel, new ConcurrentHashMap<>());
     }
 
@@ -39,7 +41,7 @@ public class SessionMemoryImpl implements Session {
     public Channel getChannel(String username) {
         return usernameChannelMap.get(username);
     }
-
+    public String getUserName(Channel channel){return  channelUsernameMap.get(channel);}
     @Override
     public String toString() {
         return usernameChannelMap.toString();

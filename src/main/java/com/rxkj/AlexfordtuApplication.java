@@ -15,7 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
  * springboot 启动类
  */
 @SpringBootApplication
-public class AlexfordtuApplication {
+public class  AlexfordtuApplication {
 
     public static void main(String[] args) {
         //获取application的上下文

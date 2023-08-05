@@ -29,11 +29,14 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, Plc> implements PlcSe
             String checksum="0000";
             //#todo:从前端获取信息
             //String data PLC站号和控制方式，都由前端传回
-            String data= "01"+ "00";
+            String data= controlMessage.getDeviceId()+ controlMessage.getCommand();
             MessageA messageA=new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.UPLOAD_STATUS_LENGTH.value,
-                    checksum,CommandEnum.RESPONSE_COMMAND.value,data);
+                    checksum,CommandEnum.CONTROLLER_COMMAND.value, data);
             log.info("responsemsg  "+messageA);
             channel.writeAndFlush(messageA);
+        }
+        else{
+            log.info("no Channel!");
         }
     }
 }

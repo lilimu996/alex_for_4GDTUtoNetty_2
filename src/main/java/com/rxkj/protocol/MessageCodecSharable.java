@@ -37,16 +37,20 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
     protected void encode(ChannelHandlerContext ctx, MessageA msg, List<Object> outlist) throws Exception {
         //开始encode
         log.info("开始encode-------------------");
+        //校验码 2字节
+        byte[] checkSum={(byte) 0x33,(byte) 0x33};
+        //传输密匙key 4个字节
+        byte[] key={(byte) 0x33,(byte) 0x33,(byte) 0x33,(byte) 0x33};
+        checkSum=AlexUtil.checksum(msg,key);
         ByteBuf out = ctx.alloc().buffer();
         //写入魔数
         out.writeBytes(AlexUtil.hexStringToByteArray(KeywordEnum.CHANNEL_HEAD.value));
-
         //写入长度
 //        log.info("hexst "+Integer.toString(msg.getLength()));
         out.writeBytes(AlexUtil.hexStringToByteArray3(Integer.toHexString(msg.getLength())));
 //        log.info("updata to there  ");
         //# todo 更新校验码
-        out.writeBytes(AlexUtil.hexStringToByteArray(msg.getChecksum()));
+        out.writeBytes(AlexUtil.hexStringToByteArray(AlexUtil.bytesToHexString(checkSum)));
         //# todo 指令
         out.writeBytes(AlexUtil.hexStringToByteArray(msg.getCommand()));
 

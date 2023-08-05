@@ -1,5 +1,6 @@
 package com.rxkj.message;
 
+import com.rxkj.util.AlexUtil;
 import lombok.Data;
 import lombok.ToString;
 
@@ -27,5 +28,9 @@ public  class MessageA extends Message {
     @Override
     public int getMessageType() {
         return MessageA;
+    }
+    public String toString(){
+
+        return this.magic+Integer.toHexString(this.length)+this.checksum+this.command+this.data+"";
     }
 }

@@ -1,5 +1,10 @@
 package com.rxkj.util;
 
+import com.rxkj.enums.KeywordEnum;
+import com.rxkj.message.MessageA;
+
+import java.nio.ByteBuffer;
+
 public class AlexUtil {
 
     public static String toStringHex1(String s) {
@@ -137,9 +142,28 @@ public class AlexUtil {
         String s1 = toStringHex1(s);
         return s1;
     }
-    public static byte[] checksum(byte[] pktData, byte[] key)
+    public static byte[] checksum(MessageA msg, byte[] key)
     {
-        byte[] checksum = new byte[2];
+
+        int length=msg.getLength();
+        ByteBuffer buffer = ByteBuffer.allocate(msg.getLength());
+        //重新将msg转换为byte类型
+        buffer.put(AlexUtil.hexStringToByteArray(KeywordEnum.CHANNEL_HEAD.value));
+        buffer.put(AlexUtil.hexStringToByteArray3(Integer.toHexString(msg.getLength())));
+        //计算密钥时密钥2字节为0x00,计算完成后用结果赋值
+        if(msg.getCommand()=="00"){
+            //数据包传输的数据为密匙
+            byte[] checkSum={(byte) 0x00,(byte) 0x00};
+            buffer.put(checkSum);
+        }else{
+            //数据包传输的其他密匙
+             String checkSum=msg.getChecksum();
+             buffer.put(AlexUtil.hexStringToByteArray(checkSum));
+        }
+        buffer.put(AlexUtil.hexStringToByteArray(msg.getCommand()));
+        buffer.put(AlexUtil.hexStringToByteArray(msg.getData()));
+
+        byte[] pktData = buffer.array();
         pktData[3] = pktData[4] = 0; //计算密钥时密钥2字节为0x00,计算完成后用结果赋值
         byte[] sum = new byte[] { 0, 0, 0, 0 };
 
@@ -150,7 +174,7 @@ public class AlexUtil {
                 sum[j] += pktData[i];
             }
         }
-
+        byte[] checksum=new  byte[2];
         checksum[0] = pktData[3] = (byte) (sum[0] + sum[1] + key[1] + key[0]);
         checksum[1] = pktData[4] = (byte) (sum[2] + sum[3] + key[3] + key[2] + pktData[3]);
         return checksum;

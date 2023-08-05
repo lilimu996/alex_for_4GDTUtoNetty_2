@@ -1,7 +1,9 @@
 package com.rxkj.entity;
 
 import com.rxkj.message.Message;
+import lombok.Data;
 
+@Data
 public class ControlMessage extends Message {
     String deviceId;
     String command;

@@ -10,7 +10,11 @@ public enum CommandEnum {
     UPLOAD_IDENTITY_COMMAND("01","DTU上传身份"),
     //AlexUtil.bytesToHexString(new byte[]{(byte) 0xFE})
     UPLOAD_STATUS_COMMAND("02","上传设备状态"),
+
+    CONTROLLER_COMMAND("03","控制设备"),
     RESPONSE_COMMAND("FE","指令回复"),
+
+
     ;
     public final String value;
     public final String type;
