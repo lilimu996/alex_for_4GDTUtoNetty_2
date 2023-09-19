@@ -52,7 +52,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             byte[] key={(byte) 0x33,(byte) 0x33,(byte) 0x33,(byte) 0x33};
             //校验码 2个字节
             byte[] checkSum={(byte) 0x00,(byte) 0x00};
-            String checksumhex=AlexUtil.bytesToHexString(key);
+            String checksumhex=AlexUtil.bytesToHexString(checkSum);
 
 //            byte[] command={(byte) 0x00};
 //            String commandhex=AlexUtil.bytesToHexString(command);

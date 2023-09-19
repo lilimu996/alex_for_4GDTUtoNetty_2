@@ -49,12 +49,12 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
 //        log.info("hexst "+Integer.toString(msg.getLength()));
         out.writeBytes(AlexUtil.hexStringToByteArray3(Integer.toHexString(msg.getLength())));
 //        log.info("updata to there  ");
-        //# todo 更新校验码
+        //#  更新校验码
         out.writeBytes(AlexUtil.hexStringToByteArray(AlexUtil.bytesToHexString(checkSum)));
-        //# todo 指令
+        //# 指令
         out.writeBytes(AlexUtil.hexStringToByteArray(msg.getCommand()));
 
-        //# todo 数据
+        //#  数据
         out.writeBytes(AlexUtil.hexStringToByteArray(msg.getData()));
         System.out.println("经过encode-------------");
         outlist.add(out);
@@ -66,12 +66,13 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         byte[] magic=new byte[2];
         msg.readBytes(magic);
         String magichex=AlexUtil.bytesToHexString(magic);
+//        log.info("magichex+++++"+magichex);
         //获取长度
         byte[] length=new byte[1];
         msg.readBytes(length);
-        //log.info("decode length  "+AlexUtil.bytesToHexString(length));
+//        log.info("decode length  "+AlexUtil.bytesToHexString(length));
         int lengthDec=Integer.parseInt(AlexUtil.bytesToHexString(length),16);
-        log.info("lenthDec  "+lengthDec);
+        log.info("TH lenthDec  "+lengthDec);
         //获取校验
         byte[] checksum=new byte[2];
         msg.readBytes(checksum);
@@ -86,6 +87,17 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         String datashex=AlexUtil.bytesToHexString(datas);
         //封装消息
         MessageA message=new MessageA(magichex,lengthDec,checksumhex,commandhex,datashex);
+        log.info("MessageA   "+message);
+
+        //out.add(message);
+        //数据校验部分
+        //key 33333333
+        //#todo:key可以保存在map中，每个通道一个key,在给客户端下发时保存
+        byte[] key={(byte) 0x33,(byte) 0x33,(byte) 0x33,(byte) 0x33};
+        checksum=AlexUtil.checksum(message,key);
+        if(AlexUtil.bytesToHexString(checksum)!=checksumhex){
+            log.info("数据校验失败,数据包为:"+message+"  "+"校验码为:"+AlexUtil.bytesToHexString(checksum));
+        }
         //
         //序列化
         //校验包头和校验码

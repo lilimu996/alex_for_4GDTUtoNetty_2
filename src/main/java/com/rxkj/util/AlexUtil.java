@@ -4,6 +4,7 @@ import com.rxkj.enums.KeywordEnum;
 import com.rxkj.message.MessageA;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class AlexUtil {
 
@@ -145,21 +146,15 @@ public class AlexUtil {
     public static byte[] checksum(MessageA msg, byte[] key)
     {
 
-        int length=msg.getLength();
+
         ByteBuffer buffer = ByteBuffer.allocate(msg.getLength());
         //重新将msg转换为byte类型
         buffer.put(AlexUtil.hexStringToByteArray(KeywordEnum.CHANNEL_HEAD.value));
         buffer.put(AlexUtil.hexStringToByteArray3(Integer.toHexString(msg.getLength())));
         //计算密钥时密钥2字节为0x00,计算完成后用结果赋值
-        if(msg.getCommand()=="00"){
-            //数据包传输的数据为密匙
-            byte[] checkSum={(byte) 0x00,(byte) 0x00};
-            buffer.put(checkSum);
-        }else{
-            //数据包传输的其他密匙
-             String checkSum=msg.getChecksum();
-             buffer.put(AlexUtil.hexStringToByteArray(checkSum));
-        }
+        byte[] checkSum={(byte) 0x00,(byte) 0x00};
+        buffer.put(checkSum);
+
         buffer.put(AlexUtil.hexStringToByteArray(msg.getCommand()));
         buffer.put(AlexUtil.hexStringToByteArray(msg.getData()));
 

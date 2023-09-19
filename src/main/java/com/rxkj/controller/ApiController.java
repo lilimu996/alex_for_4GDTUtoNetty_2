@@ -25,7 +25,7 @@ public class ApiController  {
     public R<StatusMessage> hello(HttpServletRequest request, @RequestBody ControlMessage controlMessage){
         //调用service将command转发给channel
         plcService.controller(controlMessage);
-        return R.error("this is a test!!");
+        return R.success(new StatusMessage("01","02","02"));
     }
 
     @RequestMapping("/alex")
