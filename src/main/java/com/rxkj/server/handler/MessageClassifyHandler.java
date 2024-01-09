@@ -1,9 +1,12 @@
 package com.rxkj.server.handler;
 
+import com.rxkj.mapper.DtuMap;
 import com.rxkj.message.*;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.rxkj.mapper.DtuMap.*;
 
 @Slf4j
 public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
@@ -25,6 +28,11 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 String imei=data.substring(0,30);
                 String iccid=data.substring(30,70);
                 String dtuv=data.substring(70,78);
+                //判断dtu设备号是否在DtuMap中，如果不存在则将dtu设备号和plcid存入DtuMap
+                if(getDtuByName("01") == null)
+                {
+                    addDtu("01",data);
+                }
                 IdentityMessage identityMessage =new IdentityMessage(imei,iccid,dtuv);
                 log.info("identityMessage  "+identityMessage.getMessageType());
                 ctx.fireChannelRead(identityMessage);

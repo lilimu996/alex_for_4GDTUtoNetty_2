@@ -17,9 +17,9 @@ spring:
     static-locations: classpath:/static/,classpath:/templates/,classpath:/layui/,file:${file.image-path}
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: admin
+    url: jdbc:mysql://36.139.45.250:7404/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    username: MeiFen
+    password: 40f6d445552fba55a84a91f16c3069ca
     #使用druid数据源
     type: com.alibaba.druid.pool.DruidDataSource
 mybatis-plus:
