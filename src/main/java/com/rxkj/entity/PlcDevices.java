@@ -7,7 +7,16 @@ import java.io.Serializable;
 @Data
 public class Plc implements Serializable {
     private static final long serialVersionUID = 1L;
-    private String id;
+    //PLC站号
+    private Integer idplcDevice;
+    //PLC M线圈
+    private String plcMcol;
+    //PLC X线圈
+    private String plcXcol;
+    //PLC Y线圈
+    private String plcYcol;
+    //PLC状态
+    private String plcStatus;
     private String dtuid;
 
     /**
