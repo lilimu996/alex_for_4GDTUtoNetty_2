@@ -31,7 +31,7 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 //判断dtu设备号是否在DtuMap中，如果不存在则将dtu设备号和plcid存入DtuMap
                 if(getDtuByName("01") == null)
                 {
-                    addDtu("01",data);
+                    addDtu("01",iccid);
                 }
                 IdentityMessage identityMessage =new IdentityMessage(imei,iccid,dtuv);
                 log.info("identityMessage  "+identityMessage.getMessageType());

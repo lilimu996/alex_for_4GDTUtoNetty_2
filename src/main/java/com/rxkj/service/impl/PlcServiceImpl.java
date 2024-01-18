@@ -21,9 +21,11 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, Plc> implements PlcSe
     @Override
     public void controller(ControlMessage controlMessage) {
         //前端传回plc站号，从数据库查询站号对应的iccid;
-        //String iccid="1100000000000000000000000000000000000011";
+        String iccid="1100000000000000000000000000000000000011";
         //String iccid="0909090978303000000000000000110000000000";
-        String iccid = DtuMap.getDtuByName("01");
+
+        //String iccid = DtuMap.getDtuByName("01");
+        log.info("iccid:"+iccid);
         Channel channel= SessionFactory.getSession().getChannel(iccid);
         //客户端在线
         if(channel!=null){
