@@ -55,5 +55,14 @@ public class UserController {
         }
         return R.error("delete fails!!");
     }
+    @PostMapping("/deleteById")
+    public R<String> deleteUserById(@RequestBody User user){
+        QueryWrapper<User> qw = new QueryWrapper<>();
+        qw.eq("user_numbers",user.getUserNumbers());
+        if(userService.remove(qw)){
+            return R.success("delete success!!");
+        }
+        return R.error("delete fails!!");
+    }
 
 }
