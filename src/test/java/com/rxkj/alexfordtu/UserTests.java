@@ -1,7 +1,9 @@
 package com.rxkj.alexfordtu;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Assert;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rxkj.entity.User;
 import com.rxkj.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -15,7 +17,19 @@ public class UserTests {
     @Autowired
     private UserService userService;
 
+    @Test
+    public void testSelectPage(){
+        IPage<User> page = new Page<>(1,3);
+        userService.page(page);
+        System.out.println("当前页码" + page.getCurrent());
+        System.out.println("本页条数" + page.getSize());
+        System.out.println("总页数" + page.getPages());
+        System.out.println("总条数" + page.getTotal());
+        System.out.println(page.getRecords());
 
+
+
+    }
     @Test
     public void DeleteUserByName(){
         QueryWrapper<User> qw=new QueryWrapper<>();

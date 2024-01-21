@@ -1,6 +1,8 @@
 package com.rxkj.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rxkj.common.R;
 import com.rxkj.entity.User;
 import com.rxkj.service.UserService;
@@ -23,6 +25,12 @@ public class UserController {
     public R<List<User>> selectAll(){
         List<User> userList = userService.list(null);
         return R.success(userList);
+    }
+    @GetMapping("/selectPage")
+    public R<IPage<User>> selectPage(Integer current,Integer size){
+        IPage<User> page = new Page<>(current,size);
+        userService.page(page);
+        return R.success(page);
     }
     @PostMapping("/addUser")
     public R<String> addUser(@RequestBody User user){
@@ -47,4 +55,5 @@ public class UserController {
         }
         return R.error("delete fails!!");
     }
+
 }
