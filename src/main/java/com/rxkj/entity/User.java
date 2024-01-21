@@ -1,8 +1,10 @@
 package com.rxkj.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.models.auth.In;
 import lombok.Data;
 
@@ -21,6 +23,7 @@ public class User {
     //用户年龄
     private Integer age;
     //用户出生年月日
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
     private Date brithData;
     //用户地址
     private String userAddress;

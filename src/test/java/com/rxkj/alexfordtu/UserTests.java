@@ -10,7 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 @SpringBootTest
@@ -43,7 +47,7 @@ public class UserTests {
     }
 
     @Test
-    public void UpdateUserByIdTest(){
+    public void UpdateUserByIdTest() throws ParseException {
         System.out.println(("----- updateByIdUser method test ------"));
         User user=new User();
         user.setUserNumbers("513340198902112456");
@@ -51,6 +55,11 @@ public class UserTests {
         user.setPhone("15165340980");
         user.setUserName("陈中");
         user.setUserPwd("chenzhong");
+        String time="1987-12-31";
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date date=format.parse(time);
+        user.setBrithData(date);
         user.setAge(35);
         user.setEmail("chengzhong@gmail.com");
         if(userService.updateById(user)){
