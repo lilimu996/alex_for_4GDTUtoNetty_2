@@ -34,6 +34,9 @@ public class UserController {
     }
     @PostMapping("/addUser")
     public R<String> addUser(@RequestBody User user){
+        if (!checkStringNumbers(user.getUserNumbers(),18)){
+            return R.error("Incorrectly formatted User ID number !!");
+        }
         if(userService.save(user)){
             return R.success("add success!");
         }
@@ -41,6 +44,9 @@ public class UserController {
     }
     @PostMapping("/updateUserById")
     public R<String> updateUserById(@RequestBody User user){
+        if (!checkStringNumbers(user.getUserNumbers(),18)){
+            return R.error("Incorrectly formatted User ID number !!");
+        }
         if(userService.updateById(user)){
             return R.success("update success!");
         }
@@ -63,6 +69,19 @@ public class UserController {
             return R.success("delete success!!");
         }
         return R.error("delete fails!!");
+    }
+    /**
+     * 校验字符串中的数字格式
+     * size:数字的个数
+     */
+    private static boolean checkStringNumbers(String numberString,int size) {
+        // 校验身份证格式
+        if (numberString.length() == size) {
+            if (numberString.substring(0,size-1).matches("\\d+")) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
