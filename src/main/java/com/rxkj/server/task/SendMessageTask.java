@@ -1,5 +1,6 @@
 package com.rxkj.server.task;
 
+import com.rxkj.mapper.DeviceList;
 import com.rxkj.message.SseMessage;
 import com.rxkj.service.SseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.function.Consumer;
 
 @Configuration
 public class SendMessageTask {
@@ -30,7 +32,24 @@ public class SendMessageTask {
         message.setVentingValve(0);
         message.setDtuStatus(1);
         message.setSamplerStatus("01");
-        sseService.sendMessage(message);
+        if(DeviceList.getDeviceVector().size() != 0){
+            /**
+             *遍历设备Sse消息队列，并把队列中的每个消息推送至前端
+             */
+            DeviceList.getDeviceVector().forEach(new Consumer<SseMessage>() {
+                /**
+                 * Performs this operation on the given argument.
+                 *
+                 * @param message the input argument
+                 */
+                @Override
+                public void accept(SseMessage message) {
+                    sseService.sendMessage(message);
+                }
+            });
+        }else {
+            sseService.sendMessage(message);
+        }
     }
 
 

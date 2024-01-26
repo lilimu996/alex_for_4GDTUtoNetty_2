@@ -8,6 +8,10 @@ public class SseMessage {
     private Integer total;
     private String data;
     /**
+     * 煤粉取样器设备号
+     */
+    private Integer samplerId;
+    /**
      * plc设备号
      */
     private Integer plcId;
