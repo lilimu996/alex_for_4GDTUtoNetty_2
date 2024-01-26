@@ -1,5 +1,6 @@
 package com.rxkj.service.impl;
 
+import com.rxkj.common.R;
 import com.rxkj.message.SseMessage;
 import com.rxkj.service.SseService;
 import lombok.extern.slf4j.Slf4j;
@@ -67,9 +68,12 @@ public class SseServiceImpl implements SseService {
         @Override
         public void sendMessage(SseMessage message) {
             message.setTotal(sseEmitterMap.size());
+            R<SseMessage> r = new R<SseMessage>();
             sseEmitterMap.forEach((uuid,sseEmiter)->{
                 try {
-                    sseEmiter.send(message, MediaType.APPLICATION_JSON);
+                    r.setCode(1);
+                    r.setData(message);
+                    sseEmiter.send(r, MediaType.APPLICATION_JSON);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
