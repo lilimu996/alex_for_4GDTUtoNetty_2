@@ -38,7 +38,7 @@ public class SseServiceImpl implements SseService {
             SseEmitter sseEmitter = new SseEmitter();
             //连接成功需要返回数据，否则会出现待处理状态
             try{
-                sseEmitter.send(SseEmitter.event().comment("connect success"));
+                sseEmitter.send(SseEmitter.event().data(R.success("connect success!!"),MediaType.APPLICATION_JSON));
             }catch (IOException e){
                 e.printStackTrace();
             }
@@ -73,7 +73,12 @@ public class SseServiceImpl implements SseService {
                 try {
                     r.setCode(1);
                     r.setData(message);
-                    sseEmiter.send(r, MediaType.APPLICATION_JSON);
+                    //sseEmiter.send(r, MediaType.APPLICATION_JSON);
+                    // 传递自定义类型
+
+                    //SseEmitter.SseEventBuilder event = SseEmitter.event().id(String.valueOf(1)).name("message").data(message);
+                    //sseEmiter.send(r, MediaType.TEXT_EVENT_STREAM);
+                    sseEmiter.send(r,MediaType.APPLICATION_JSON);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
