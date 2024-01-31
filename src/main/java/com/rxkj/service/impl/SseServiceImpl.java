@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @Service
@@ -35,7 +37,7 @@ public class SseServiceImpl implements SseService {
          */
         @Override
         public SseEmitter connect(String uuid) {
-            SseEmitter sseEmitter = new SseEmitter();
+            SseEmitter sseEmitter = new SseEmitter(-1L);
             //连接成功需要返回数据，否则会出现待处理状态
             try{
                 sseEmitter.send(SseEmitter.event().data(R.success("connect success!!"),MediaType.APPLICATION_JSON));
@@ -79,8 +81,8 @@ public class SseServiceImpl implements SseService {
                     //SseEmitter.SseEventBuilder event = SseEmitter.event().id(String.valueOf(1)).name("message").data(message);
                     //sseEmiter.send(r, MediaType.TEXT_EVENT_STREAM);
                     sseEmiter.send(r,MediaType.APPLICATION_JSON);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Exception ex) {
+                    sseEmiter.completeWithError(ex);
                 }
             });
         }
