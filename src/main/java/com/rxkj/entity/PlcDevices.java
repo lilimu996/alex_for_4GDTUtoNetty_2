@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class PlcDevices implements Serializable {
     //private static final long serialVersionUID = 1L;
     //PLC站号
-    private Integer idplcDevice;
+    private Integer idPlcDevice;
     //PLC M线圈
     private String plcMcol;
     //PLC X线圈

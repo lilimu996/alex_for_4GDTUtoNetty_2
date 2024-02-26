@@ -15,42 +15,41 @@ import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Slf4j
 @Service
-public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implements PlcService{
+public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implements PlcService {
     @Override
     public void controller(ControlMessage controlMessage) {
-        //前端传回plc站号，从数据库查询站号对应的iccid;
+        //前端传回plc站号，从数据库查询站号对应的iccId;
+
         /**
          *
-         * #todo:前端传回设备号
+         * todo:前端传回设备号
          * 不同的DTU会有相同的plc站号，需要建立一个数据表，映射dtu,plc,和设备，前端传回设备号，再从数据库查找对应的
          * dtu序列号和他所对应的plc站号
-         * */
-        //String iccid="1100000000000000000000000000000000000011";
-        //String iccid="0909090978303000000000000000110000000000";
-        Channel channel =null;
-        String iccid = DtuMap.getDtuByName("01");
-        log.info("iccid:"+iccid);
-        if(iccid==null){
-            log.info("dtu连接数量:0");
-        }else{
-            channel= SessionFactory.getSession().getChannel(iccid);
-        }
-        //客户端在线
-        if(channel!=null){
-            //回复客服端
+         **/
+
+        // String iccId="1100000000000000000000000000000000000011";
+        // String iccId="0909090978303000000000000000110000000000";
+
+        String iccId = DtuMap.getDtuByName("01");
+        log.info("iccId:" + iccId);
+        Channel channel = SessionFactory.getSession().getChannel(iccId);
+        log.info("session:" + SessionFactory.getSession().toString());
+        // 客户端在线
+        if (!Objects.isNull(channel)) {
+            // 回复客服端
             // log.info("CommandEnum "+CommandEnum.UPLOAD_COMMAND.value);
-            String checksum="0000";
-            //#todo:从前端获取信息
-            //String data PLC站号和控制方式，都由前端传回
-            String data= controlMessage.getDeviceId()+ controlMessage.getCommand();
-            MessageA messageA=new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.UPLOAD_STATUS_LENGTH.value,
-                    checksum,CommandEnum.CONTROLLER_COMMAND.value, data);
-            log.info("responsemsg  "+messageA);
+            String checksum = "0000";
+            // todo:从前端获取信息
+            // String data PLC站号和控制方式，都由前端传回
+            String data = controlMessage.getDeviceId() + controlMessage.getCommand();
+            MessageA messageA = new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.UPLOAD_STATUS_LENGTH.value, checksum, CommandEnum.CONTROLLER_COMMAND.value, data);
+            log.info("responseMsg  " + messageA);
             channel.writeAndFlush(messageA);
-        }
-        else{
+        } else {
             log.info("no Channel!");
         }
     }
