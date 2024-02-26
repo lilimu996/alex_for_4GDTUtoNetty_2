@@ -29,10 +29,14 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
          * */
         //String iccid="1100000000000000000000000000000000000011";
         //String iccid="0909090978303000000000000000110000000000";
-
+        Channel channel =null;
         String iccid = DtuMap.getDtuByName("01");
         log.info("iccid:"+iccid);
-        Channel channel= SessionFactory.getSession().getChannel(iccid);
+        if(iccid==null){
+            log.info("dtu连接数量:0");
+        }else{
+            channel= SessionFactory.getSession().getChannel(iccid);
+        }
         //客户端在线
         if(channel!=null){
             //回复客服端
