@@ -7,6 +7,6 @@ import com.rxkj.entity.PlcDevices;
 public interface PlcService extends IService<PlcDevices> {
     /**
      * 发送控制信息给dtu
-     * */
-     void controller(ControlMessage controlMessage);
+     */
+    void controller(ControlMessage controlMessage);
 }

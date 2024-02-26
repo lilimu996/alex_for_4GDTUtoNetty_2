@@ -25,23 +25,23 @@ public class ChannelMap {
     }
 
     /**
-     *  获取指定name的channel
+     * 获取指定name的channel
      */
-    public static Channel getChannelByName(ChannelId channelId){
-        if(CollectionUtils.isEmpty(CHANNEL_MAP)){
+    public static Channel getChannelByName(ChannelId channelId) {
+        if (CollectionUtils.isEmpty(CHANNEL_MAP)) {
             return null;
         }
         return CHANNEL_MAP.get(channelId);
     }
 
     /**
-     *  将通道中的消息推送到每一个客户端
+     * 将通道中的消息推送到每一个客户端
      */
-    public static boolean pushNewsToAllClient(String obj){
-        if(CollectionUtils.isEmpty(CHANNEL_MAP)){
+    public static boolean pushNewsToAllClient(String obj) {
+        if (CollectionUtils.isEmpty(CHANNEL_MAP)) {
             return false;
         }
-        for(ChannelId channelId: CHANNEL_MAP.keySet()) {
+        for (ChannelId channelId : CHANNEL_MAP.keySet()) {
             Channel channel = CHANNEL_MAP.get(channelId);
             channel.writeAndFlush(new TextWebSocketFrame(obj));
         }
@@ -49,17 +49,17 @@ public class ChannelMap {
     }
 
     /**
-     *  将channel和对应的name添加到ConcurrentHashMap
+     * 将channel和对应的name添加到ConcurrentHashMap
      */
-    public static void addChannel(ChannelId channelId,Channel channel){
-        CHANNEL_MAP.put(channelId,channel);
+    public static void addChannel(ChannelId channelId, Channel channel) {
+        CHANNEL_MAP.put(channelId, channel);
     }
 
     /**
-     *  移除掉name对应的channel
+     * 移除掉name对应的channel
      */
-    public static boolean removeChannelByName(ChannelId channelId){
-        if(CHANNEL_MAP.containsKey(channelId)){
+    public static boolean removeChannelByName(ChannelId channelId) {
+        if (CHANNEL_MAP.containsKey(channelId)) {
             CHANNEL_MAP.remove(channelId);
             return true;
         }

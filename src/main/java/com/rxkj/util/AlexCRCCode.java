@@ -4,8 +4,8 @@ public class AlexCRCCode {
 
     /**
      * 计算CRC16校验码
-     * @param bytes
-     * 字节数组
+     *
+     * @param bytes 字节数组
      * @return {@link String} 校验码
      * @since 1.0
      */
@@ -59,8 +59,8 @@ public class AlexCRCCode {
         String crcoff = getCRC("030600150000");
         //String crdi1 = getCRC("630200100002");
         //String crcdo1 = getCRC("630100140002");
-        System.out.println("开: " + "030600150001"+crcon.replaceAll(" ",""));
-        System.out.println("关: " + "030600150000"+crcoff.replaceAll(" ",""));
+        System.out.println("开: " + "030600150001" + crcon.replaceAll(" ", ""));
+        System.out.println("关: " + "030600150000" + crcoff.replaceAll(" ", ""));
         //System.out.println("crdi1: " + "630200100002"+crdi1.replaceAll(" ",""));
         //System.out.println("crcdo1: " + "630100140002"+crcdo1.replaceAll(" ",""));
     }

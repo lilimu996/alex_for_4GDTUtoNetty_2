@@ -33,10 +33,10 @@ import io.netty.util.concurrent.GenericFutureListener;
 /**
  * netty dtu服务端
  * 用于监听dtu硬件的通信，中心服务端
+ *
  * @author alex
  * @date 2020年11月16日
  * @Description
- *
  */
 @Component
 public class AlexForDTUServer {
@@ -65,15 +65,16 @@ public class AlexForDTUServer {
 
     LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
 
-    MessageCodecSharable  MESSAGE_CODEC = new MessageCodecSharable();
+    MessageCodecSharable MESSAGE_CODEC = new MessageCodecSharable();
 
     final QuitHandler QUIT_HANDLER = new QuitHandler();  //--断开连接---处理器
 
     /**
      * 启动服务
+     *
      * @param
      */
-    public void start(){
+    public void start() {
 
         try {
             //获取本机的ip地址
@@ -82,14 +83,14 @@ public class AlexForDTUServer {
             e1.printStackTrace();
         }
 
-        serverBootstrap.group(bossGroup,workGroup)
+        serverBootstrap.group(bossGroup, workGroup)
                 //非阻塞
                 .channel(NioServerSocketChannel.class)
                 //连接缓冲池的大小
                 .option(ChannelOption.SO_BACKLOG, 1024)
                 //设置通道Channel的分配器
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childHandler(new ChannelInitializer<SocketChannel>(){
+                .childHandler(new ChannelInitializer<SocketChannel>() {
 
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
@@ -114,11 +115,11 @@ public class AlexForDTUServer {
         //启动成功标识
         boolean startFlag = false;
         //启动失败时，多次启动，直到启动成功为止
-        while(!startFlag){
-            try{
+        while (!startFlag) {
+            try {
                 channelFuture = serverBootstrap.bind(port).sync();
                 startFlag = true;
-            }catch(Exception e){
+            } catch (Exception e) {
                 log.info("端口号：" + port + "已被占用！");
                 port++;
                 log.info("尝试一个新的端口：" + port);
