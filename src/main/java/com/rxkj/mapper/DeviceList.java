@@ -15,7 +15,8 @@ public class DeviceList {
     /**
      * 向指定位置添加设备
      */
-    public static boolean add(){
+    public static boolean add(int DeviceId,SseMessage message){
+        DEVICE_VECTOR.add(DeviceId,message);
         return true;
     }
     /**

@@ -1,5 +1,6 @@
 package com.rxkj.server.handler;
 
+import com.rxkj.mapper.DeviceList;
 import com.rxkj.mapper.DtuMap;
 import com.rxkj.message.*;
 import io.netty.channel.ChannelHandlerContext;
@@ -40,9 +41,20 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
             case "02"://设备状态信息，作为心跳包周期性上传，如状态发生变化立即上传
                 //#todo:deviceId为预留字段，为以后的多台设备做准备
                 String deviceId=data.substring(0,2);
-                String auxiliaryCoils=data.substring(2,4);
-                String outputCoil=data.substring(4,6);
-                StatusMessage statusMessage=new StatusMessage(deviceId,auxiliaryCoils,outputCoil);
+                String coilAddress=data.substring(2,6);
+                String outputCoil=data.substring(6,8);
+                SseMessage message = new SseMessage();
+                if((message= (SseMessage) DeviceList.getDeviceVector().get(Integer.parseInt(deviceId)))!=null){
+                    if(coilAddress.equals("0803")){
+                        message.setInletValve(Integer.parseInt(outputCoil));
+                    } else if (coilAddress.equals("0802")) {
+                        message.setVentingValve(Integer.parseInt(outputCoil));
+                    } else if (coilAddress.equals("0804")) {
+                        message.setSampleValve(Integer.parseInt(outputCoil));
+                    }
+                    DeviceList.add(Integer.parseInt(deviceId),message);
+                }
+                StatusMessage statusMessage=new StatusMessage(deviceId,coilAddress,outputCoil);
                 log.info("StatusMessage  "+statusMessage.getMessageType());
                 ctx.fireChannelRead(statusMessage);
                 break;
