@@ -11,18 +11,25 @@ import java.util.Vector;
  */
 public class DeviceList {
     private static final Vector DEVICE_VECTOR = new Vector(32, 16);
-    public static Vector getDeviceVector(){return DEVICE_VECTOR;};
+
+    public static Vector getDeviceVector() {
+        return DEVICE_VECTOR;
+    }
+
     /**
      * 向指定位置添加设备
      */
+
     public static boolean add(int DeviceId,SseMessage message){
         DEVICE_VECTOR.add(DeviceId,message);
+
         return true;
     }
+
     /**
      * 获取指定索引的设备
      */
-    public  static SseMessage get(Integer id){
+    public static SseMessage get(Integer id) {
         return new SseMessage();
     }
 }

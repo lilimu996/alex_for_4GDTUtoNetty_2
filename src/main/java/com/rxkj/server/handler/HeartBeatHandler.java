@@ -27,7 +27,7 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
     private static Logger log = LoggerFactory.getLogger(HeartBeatHandler.class);
 
     // 心跳的时间间隔，单位为s
-    private static final int HEARTBEAT_INTERVAL = 100;
+    private static final int HEARTBEAT_INTERVAL = 20;
 
     // 在Handler被加入到Pipeline时，开始发送心跳
     @Override

@@ -87,6 +87,7 @@ public class AlexUtil {
         }
         return b;
     }
+
     public static byte[] hexStringToByteArray2(String hexString) {
         int len = hexString.length();
         byte[] byteArray = new byte[len / 2];
@@ -98,6 +99,7 @@ public class AlexUtil {
         }
         return byteArray;
     }
+
     public static byte[] hexStringToByteArray3(String hexString) {
         hexString = hexString.replaceAll("\\s+", ""); // Remove any whitespace
 
@@ -117,11 +119,9 @@ public class AlexUtil {
     }
 
 
-
-
-
     /**
      * byte数组转16进制字符串
+     *
      * @param bArray
      * @return
      */
@@ -137,14 +137,14 @@ public class AlexUtil {
         return sb.toString();
     }
 
-    public static String alexhandle(String msg){
+    public static String alexhandle(String msg) {
         int i = msg.indexOf("data=");
-        String s = msg.substring(i).replace("data=","");
+        String s = msg.substring(i).replace("data=", "");
         String s1 = toStringHex1(s);
         return s1;
     }
-    public static byte[] checksum(MessageA msg, byte[] key)
-    {
+
+    public static byte[] checksum(MessageA msg, byte[] key) {
 
 
         ByteBuffer buffer = ByteBuffer.allocate(msg.getLength());
@@ -152,7 +152,7 @@ public class AlexUtil {
         buffer.put(AlexUtil.hexStringToByteArray(KeywordEnum.CHANNEL_HEAD.value));
         buffer.put(AlexUtil.hexStringToByteArray3(Integer.toHexString(msg.getLength())));
         //计算密钥时密钥2字节为0x00,计算完成后用结果赋值
-        byte[] checkSum={(byte) 0x00,(byte) 0x00};
+        byte[] checkSum = {(byte) 0x00, (byte) 0x00};
         buffer.put(checkSum);
 
         buffer.put(AlexUtil.hexStringToByteArray(msg.getCommand()));
@@ -160,16 +160,14 @@ public class AlexUtil {
 
         byte[] pktData = buffer.array();
         pktData[3] = pktData[4] = 0; //计算密钥时密钥2字节为0x00,计算完成后用结果赋值
-        byte[] sum = new byte[] { 0, 0, 0, 0 };
+        byte[] sum = new byte[]{0, 0, 0, 0};
 
-        for (int j = 0; j < 4; j++)
-        {
-            for (int i = j; i < pktData.length; i += 4)
-            {
+        for (int j = 0; j < 4; j++) {
+            for (int i = j; i < pktData.length; i += 4) {
                 sum[j] += pktData[i];
             }
         }
-        byte[] checksum=new  byte[2];
+        byte[] checksum = new byte[2];
         checksum[0] = pktData[3] = (byte) (sum[0] + sum[1] + key[1] + key[0]);
         checksum[1] = pktData[4] = (byte) (sum[2] + sum[3] + key[3] + key[2] + pktData[3]);
         return checksum;
@@ -177,17 +175,18 @@ public class AlexUtil {
 
     /**
      * 截取字符数组的字串
+     *
      * @param bytes
      * @param start
      * @param end
      * @return
      */
-    public static byte[] substring(byte[] bytes,int start,int end){
-        int length=end-start;
+    public static byte[] substring(byte[] bytes, int start, int end) {
+        int length = end - start;
 
-        byte[] msg=new byte[length];
+        byte[] msg = new byte[length];
         for (int i = 0; i < length; i++) {
-            msg[i]=bytes[start-1];
+            msg[i] = bytes[start - 1];
         }
         return msg;
     }
@@ -195,10 +194,9 @@ public class AlexUtil {
     public static void main(String[] args) {
 //        String s = stringToHexString("01050000FF008C3A");
 //        System.out.println(s);
-        byte[] bytes={(byte) 0xAA,(byte) 0xAA,(byte) 0x08,(byte) 0x00,(byte) 0xFF};
-        System.out.println(AlexUtil.bytesToHexString(substring(bytes,3,4)));
+        byte[] bytes = {(byte) 0xAA, (byte) 0xAA, (byte) 0x08, (byte) 0x00, (byte) 0xFF};
+        System.out.println(AlexUtil.bytesToHexString(substring(bytes, 3, 4)));
     }
-
 
 
 }

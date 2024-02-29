@@ -3,12 +3,12 @@
 #mybatis.configuration.log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 server:
-  port: 8966
+  port: 7411
   servlet:
     context-path: /
 
 alex:
-  port: 8896
+  port: 7412
 
 file:
   #自己定义

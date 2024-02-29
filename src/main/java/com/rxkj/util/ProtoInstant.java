@@ -2,10 +2,10 @@ package com.rxkj.util;
 
 /**
  * 编解码常量配置
+ *
  * @author alex
  * @date 2020年11月16日
  * @Description
- *
  */
 public class ProtoInstant {
 

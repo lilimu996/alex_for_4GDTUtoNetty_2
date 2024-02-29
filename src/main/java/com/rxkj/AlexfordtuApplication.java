@@ -19,7 +19,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @SpringBootApplication
 @MapperScan("com/rxkj/mapper")
-public class  AlexfordtuApplication {
+public class AlexfordtuApplication {
 
     public static void main(String[] args) {
         //获取application的上下文

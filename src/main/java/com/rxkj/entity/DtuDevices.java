@@ -1,6 +1,5 @@
 package com.rxkj.entity;
 
-import io.swagger.models.auth.In;
 import lombok.Data;
 
 import java.util.Date;
@@ -14,7 +13,7 @@ public class DtuDevices {
     //DTU状态
     private Integer status;
     //DTU下线时间
-    private Date downtime;
+    private Date downTime;
     //DTU类型 modbusDTU或TCPDTU
     private String deviceType;
     //DTU接口类型

@@ -6,6 +6,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public interface SseService {
     /**
      * 创建sse连接
+     *
      * @param uuid
      * @return
      */
@@ -13,6 +14,7 @@ public interface SseService {
 
     /**
      * 发送消息
+     *
      * @param message
      */
     void sendMessage(SseMessage message);
