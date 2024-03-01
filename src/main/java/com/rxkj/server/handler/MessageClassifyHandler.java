@@ -43,17 +43,17 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 String deviceId=data.substring(0,2);
                 String coilAddress=data.substring(2,6);
                 String outputCoil=data.substring(6,8);
-                SseMessage message = new SseMessage();
-                if((message= (SseMessage) DeviceList.getDeviceVector().get(Integer.parseInt(deviceId)))!=null){
-                    if(coilAddress.equals("0803")){
-                        message.setInletValve(Integer.parseInt(outputCoil));
-                    } else if (coilAddress.equals("0802")) {
-                        message.setVentingValve(Integer.parseInt(outputCoil));
-                    } else if (coilAddress.equals("0804")) {
-                        message.setSampleValve(Integer.parseInt(outputCoil));
-                    }
-                    DeviceList.add(Integer.parseInt(deviceId),message);
-                }
+//                SseMessage message = new SseMessage();
+//                if((message= (SseMessage) DeviceList.getDeviceVector().get(Integer.parseInt(deviceId)))!=null){
+//                    if(coilAddress.equals("0803")){
+//                        message.setInletValve(Integer.parseInt(outputCoil));
+//                    } else if (coilAddress.equals("0802")) {
+//                        message.setVentingValve(Integer.parseInt(outputCoil));
+//                    } else if (coilAddress.equals("0804")) {
+//                        message.setSampleValve(Integer.parseInt(outputCoil));
+//                    }
+//                    DeviceList.add(Integer.parseInt(deviceId),message);
+//                }
                 StatusMessage statusMessage=new StatusMessage(deviceId,coilAddress,outputCoil);
                 log.info("StatusMessage  "+statusMessage.getMessageType());
                 ctx.fireChannelRead(statusMessage);
