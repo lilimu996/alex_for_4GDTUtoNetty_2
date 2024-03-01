@@ -5,6 +5,9 @@ import com.rxkj.message.StatusMessage;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import com.rxkj.message.*;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class StatusHandler extends SimpleChannelInboundHandler<StatusMessage> {
     /**
      * @param channelHandlerContext
@@ -32,6 +35,7 @@ public class StatusHandler extends SimpleChannelInboundHandler<StatusMessage> {
             }
 
             DeviceList.add(Integer.parseInt(statusMessage.getDeviceId()),message);
+            log.info("StatusMessage processing"+DeviceList.getDeviceVector().size());
         }
     }
 }
