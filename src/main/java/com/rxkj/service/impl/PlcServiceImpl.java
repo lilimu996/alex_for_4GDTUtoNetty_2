@@ -1,6 +1,7 @@
 package com.rxkj.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.rxkj.mapper.DeviceList;
 import com.rxkj.mapper.DtuMap;
 import com.rxkj.mapper.PlcMapper;
 import com.rxkj.entity.PlcDevices;
@@ -9,6 +10,7 @@ import com.rxkj.enums.CommandLengthEnum;
 import com.rxkj.enums.KeywordEnum;
 import com.rxkj.entity.ControlMessage;
 import com.rxkj.message.MessageA;
+import com.rxkj.message.SseMessage;
 import com.rxkj.service.PlcService;
 import com.rxkj.server.session.SessionFactory;
 import io.netty.channel.Channel;
@@ -51,6 +53,13 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
             // todo:从前端获取信息
             // String data PLC站号和控制方式，都由前端传回
             String data = controlMessage.getDeviceId() + controlMessage.getCommand();
+            if(controlMessage.getCommand().equals("03")){
+                SseMessage sseMessage=new SseMessage();
+                sseMessage=DeviceList.get(01);
+                sseMessage.setSampleValve(0);
+                sseMessage.setInletValve(0);
+                sseMessage.setSampleValve(0);
+            }
             MessageA messageA = new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.UPLOAD_STATUS_LENGTH.value, checksum, CommandEnum.CONTROLLER_COMMAND.value, data);
             log.info("responseMsg  " + messageA);
             channel.writeAndFlush(messageA);
