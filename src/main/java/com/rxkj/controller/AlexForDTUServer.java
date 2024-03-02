@@ -97,7 +97,7 @@ public class AlexForDTUServer {
                         pipeline.addLast(new ProcotolFrameDecoder()) // 帧解码器 【与自定义编解码器 MessageCodecSharable一起配置参数】
                                 .addLast(LOGGING_HANDLER)//日志
                                 .addLast(MESSAGE_CODEC)
-                                .addLast(new IdleStateHandler(120, 0, 0))//检测读空闲状态，时间为300s
+                                .addLast(new IdleStateHandler(20, 0, 0))//检测读空闲状态，时间为300s
                                 .addLast(new HeartBeatHandlerN())//心跳处理
                                 .addLast(new MessageClassifyHandler())//消息分类
                                 .addLast(new DeviceIdentityHandler())//设备上传身份指令，服务器回复应答

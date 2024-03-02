@@ -81,7 +81,6 @@ public class SseServiceImpl implements SseService {
                  SseEmitter.SseEventBuilder event = SseEmitter.event().id(String.valueOf(1)).name("message").data(message);
                  sseEmiter.send(r, MediaType.TEXT_EVENT_STREAM);
                 */
-
                 sseEmiter.send(r, MediaType.APPLICATION_JSON);
             } catch (Exception ex) {
                 sseEmiter.completeWithError(ex);

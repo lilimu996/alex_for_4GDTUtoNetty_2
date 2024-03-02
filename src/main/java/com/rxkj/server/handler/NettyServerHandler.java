@@ -28,7 +28,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * 功能描述: 有客户端连接服务器会触发此函数
-     * @param  ctx 通道
+     *
+     * @param ctx 通道
      * @return void
      */
     @Override
@@ -36,37 +37,35 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
         String clientIp = insocket.getAddress().getHostAddress();
         int clientPort = insocket.getPort();
-        //获取连接通道唯一标识
+        // 获取连接通道唯一标识
         ChannelId channelId = ctx.channel().id();
-        //如果map中不包含此连接，就保存连接
+        // 如果map中不包含此连接，就保存连接
         if (ChannelMap.getChannelMap().containsKey(channelId)) {
-            log.info("客户端:{},是连接状态，连接通道数量:{} ",channelId,ChannelMap.getChannelMap().size());
+            log.info("客户端:{},是连接状态，连接通道数量:{} ", channelId, ChannelMap.getChannelMap().size());
         } else {
-            //保存连接
+            // 保存连接
             ChannelMap.addChannel(channelId, ctx.channel());
-            log.info("客户端:{},连接netty服务器[IP:{}-->PORT:{}]",channelId, clientIp,clientPort);
-            log.info("连接通道数量: {}",ChannelMap.getChannelMap().size());
+            log.info("客户端:{},连接netty服务器[IP:{}-->PORT:{}]", channelId, clientIp, clientPort);
+            log.info("连接通道数量: {}", ChannelMap.getChannelMap().size());
 //            byte[] magic={(byte) 0xAA,(byte) 0xAA};
 //            String magichex= AlexUtil.bytesToHexString(magic);
-            //传输密匙key 4个字节
-            byte[] key={(byte) 0x33,(byte) 0x33,(byte) 0x33,(byte) 0x33};
-            //校验码 2个字节
-            byte[] checkSum={(byte) 0x00,(byte) 0x00};
-            String checksumhex=AlexUtil.bytesToHexString(checkSum);
+            // 传输密匙key 4个字节
+            byte[] key = {(byte) 0x33, (byte) 0x33, (byte) 0x33, (byte) 0x33};
+            // 校验码 2个字节
+            byte[] checkSum = {(byte) 0x00, (byte) 0x00};
+            String checksumhex = AlexUtil.bytesToHexString(checkSum);
 
 //            byte[] command={(byte) 0x00};
 //            String commandhex=AlexUtil.bytesToHexString(command);
             /*byte[] datas={(byte) 0x33,(byte) 0x33,(byte) 0x33,(byte) 0x33};
             String datashex=AlexUtil.bytesToHexString(datas);*/
 //            int lengthDec=10;
-            //构造message
-            MessageA message=new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.START_LENGTH.value,
-                    checksumhex, CommandEnum.START_COMMAND.value, KeywordEnum.KEY.value);
+            // 构造message
+            MessageA message = new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.START_LENGTH.value, checksumhex, CommandEnum.START_COMMAND.value, KeywordEnum.KEY.value);
 
 
-
-            log.info("启动消息 "+message);
-            //发送启动指令
+            log.info("启动消息 " + message);
+            // 发送启动指令
 //            System.out.println("Client connected: " + ctx.channel().remoteAddress());
 //            ctx.writeAndFlush("Welcome to the server!\r\n");
 //            super.channelActive(ctx);
@@ -78,7 +77,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * 功能描述: 有客户端终止连接服务器会触发此函数
-     * @param  ctx 通道处理程序上下文
+     *
+     * @param ctx 通道处理程序上下文
      * @return void
      */
     @Override
@@ -86,37 +86,38 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         InetSocketAddress inSocket = (InetSocketAddress) ctx.channel().remoteAddress();
         String clientIp = inSocket.getAddress().getHostAddress();
         ChannelId channelId = ctx.channel().id();
-        //包含此客户端才去删除
+        // 包含此客户端才去删除
         if (ChannelMap.getChannelMap().containsKey(channelId)) {
-            //删除连接
-            //删除session
+            // 删除连接
+            // 删除session
             log.info("有一个客户端断开连接");
             //#todo:用户连接上传通道信息后再断开，通道不会被删除（bug）
-            if(SessionFactory.getSession().getUserName(ctx.channel())!=null){
+            if (SessionFactory.getSession().getUserName(ctx.channel()) != null) {
                 SessionFactory.getSession().unbind(ctx.channel());
                 ChannelMap.getChannelMap().remove(channelId);
-            }else{
+            } else {
                 ChannelMap.getChannelMap().remove(channelId);
             }
-            log.info("客户端:{},连接netty服务器[IP:{}-->PORT:{}]",channelId, clientIp,inSocket.getPort());
+            log.info("客户端:{},连接netty服务器[IP:{}-->PORT:{}]", channelId, clientIp, inSocket.getPort());
             log.info("连接通道数量: " + ChannelMap.getChannelMap().size());
         }
     }
 
     /**
      * 功能描述: 有客户端发消息会触发此函数
-     * @param  ctx 通道处理程序上下文
-     * @param  msg 客户端发送的消息
+     *
+     * @param ctx 通道处理程序上下文
+     * @param msg 客户端发送的消息
      * @return void
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        log.info("加载客户端报文,客户端id:{},客户端消息:{}",ctx.channel().id(), msg);
-        //String data = String.valueOf(msg);
-        //Integer water = Integer.parseInt(data.substring(6,10),16);
-        //log.info("当前水位:{}cm",water);
-        //响应客户端
-        //this.channelWrite(ctx.channel().id(), msg);
+        log.info("加载客户端报文,客户端id:{},客户端消息:{}", ctx.channel().id(), msg);
+        // String data = String.valueOf(msg);
+        // Integer water = Integer.parseInt(data.substring(6,10),16);
+        // log.info("当前水位:{}cm",water);
+        // 响应客户端
+        // this.channelWrite(ctx.channel().id(), msg);
     }
 
    /* @Override
@@ -127,23 +128,24 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * 功能描述: 服务端给客户端发送消息
-     * @param  channelId 连接通道唯一id
-     * @param  msg 需要发送的消息内容
+     *
+     * @param channelId 连接通道唯一id
+     * @param msg       需要发送的消息内容
      * @return void
      */
     public void channelWrite(ChannelId channelId, Object msg) throws Exception {
         Channel channel = ChannelMap.getChannelMap().get(channelId);
         if (channel == null) {
-            log.info("通道:{},不存在",channelId);
+            log.info("通道:{},不存在", channelId);
             return;
         }
         if (msg == null || msg == "") {
             log.info("服务端响应空的消息");
             return;
         }
-        //将客户端的信息直接返回写入ctx
+        // 将客户端的信息直接返回写入ctx
         channel.write(msg);
-        //刷新缓存区
+        // 刷新缓存区
         channel.flush();
     }
 
@@ -153,19 +155,19 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.READER_IDLE) {
-                log.info("Client:{},READER_IDLE 读超时",socketString);
+                log.info("Client:{},READER_IDLE 读超时", socketString);
                 ctx.disconnect();
                 Channel channel = ctx.channel();
                 ChannelId id = channel.id();
                 ChannelMap.removeChannelByName(id);
             } else if (event.state() == IdleState.WRITER_IDLE) {
-                log.info("Client:{}, WRITER_IDLE 写超时",socketString);
+                log.info("Client:{}, WRITER_IDLE 写超时", socketString);
                 ctx.disconnect();
                 Channel channel = ctx.channel();
                 ChannelId id = channel.id();
                 ChannelMap.removeChannelByName(id);
             } else if (event.state() == IdleState.ALL_IDLE) {
-                log.info("Client:{},ALL_IDLE 总超时",socketString);
+                log.info("Client:{},ALL_IDLE 总超时", socketString);
                 ctx.disconnect();
                 Channel channel = ctx.channel();
                 ChannelId id = channel.id();
@@ -176,22 +178,22 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * 功能描述: 发生异常会触发此函数
-     * @param  ctx 通道处理程序上下文
-     * @param  cause 异常
+     *
+     * @param ctx   通道处理程序上下文
+     * @param cause 异常
      * @return void
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         ctx.close();
-        log.info("{}:发生了错误,此连接被关闭。此时连通数量:{}",ctx.channel().id(),ChannelMap.getChannelMap().size());
+        log.info("{}:发生了错误,此连接被关闭。此时连通数量:{}", ctx.channel().id(), ChannelMap.getChannelMap().size());
     }
 
     public static void main(String[] args) {
-        byte[] checkSum={(byte) 0x00,(byte) 0x00};
-        String checksumhex=AlexUtil.bytesToHexString(checkSum);
-        MessageA message=new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.START_LENGTH.value,
-                checksumhex, CommandEnum.START_COMMAND.value, KeywordEnum.KEY.value);
-        log.info("messageA    "+message.toString());
+        byte[] checkSum = {(byte) 0x00, (byte) 0x00};
+        String checksumhex = AlexUtil.bytesToHexString(checkSum);
+        MessageA message = new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.START_LENGTH.value, checksumhex, CommandEnum.START_COMMAND.value, KeywordEnum.KEY.value);
+        log.info("messageA    " + message.toString());
     }
 
 }

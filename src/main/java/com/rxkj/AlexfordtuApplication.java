@@ -1,6 +1,7 @@
 package com.rxkj;
 
 import com.rxkj.controller.AlexForDTUServer;
+import com.rxkj.mapper.DeviceList;
 import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -22,7 +23,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class AlexfordtuApplication {
 
     public static void main(String[] args) {
-        //获取application的上下文
+
+        DeviceList.initDEVICE_VECTOR();
+
+        // 获取application的上下文
         ApplicationContext applicationContext = SpringApplication.run(AlexfordtuApplication.class, args);
 
         /**
