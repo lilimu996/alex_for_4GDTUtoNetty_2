@@ -37,21 +37,21 @@ public class SseServiceImpl implements SseService {
     @Override
     public SseEmitter connect(String uuid) {
         SseEmitter sseEmitter = new SseEmitter(-1L);
-        //连接成功需要返回数据，否则会出现待处理状态
+        // 连接成功需要返回数据，否则会出现待处理状态
         try {
             sseEmitter.send(SseEmitter.event().data(R.success("connect success!!"), MediaType.APPLICATION_JSON));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //连接断开
+        // 连接断开
         sseEmitter.onCompletion(() -> {
             sseEmitterMap.remove(uuid);
         });
-        //连接超时
+        // 连接超时
         sseEmitter.onTimeout(() -> {
             sseEmitterMap.remove(uuid);
         });
-        //连接报错
+        // 连接报错
         sseEmitter.onError((throwable) -> {
             sseEmitterMap.remove(uuid);
         });
@@ -74,11 +74,14 @@ public class SseServiceImpl implements SseService {
             try {
                 r.setCode(1);
                 r.setData(message);
-                //sseEmiter.send(r, MediaType.APPLICATION_JSON);
-                // 传递自定义类型
 
-                //SseEmitter.SseEventBuilder event = SseEmitter.event().id(String.valueOf(1)).name("message").data(message);
-                //sseEmiter.send(r, MediaType.TEXT_EVENT_STREAM);
+                /*
+                 sseEmiter.send(r, MediaType.APPLICATION_JSON);
+                 传递自定义类型
+                 SseEmitter.SseEventBuilder event = SseEmitter.event().id(String.valueOf(1)).name("message").data(message);
+                 sseEmiter.send(r, MediaType.TEXT_EVENT_STREAM);
+                */
+
                 sseEmiter.send(r, MediaType.APPLICATION_JSON);
             } catch (Exception ex) {
                 sseEmiter.completeWithError(ex);
