@@ -28,7 +28,7 @@ public class HeartBeatHandlerN extends ChannelInboundHandlerAdapter {
             IdleStateEvent e = (IdleStateEvent) evt;
             if (e.state() == IdleState.READER_IDLE) {
                 // Send a heartbeat packet to keep the connection alive
-                /*MessageA messageA=new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.RESPONSE_COMMAND.value,
+                /* MessageA messageA=new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.RESPONSE_COMMAND.value,
                         checksum, CommandEnum.RESPONSE_COMMAND.value,data);*/
 //                ctx.writeAndFlush();
                 //5s读空闲触发心跳事件

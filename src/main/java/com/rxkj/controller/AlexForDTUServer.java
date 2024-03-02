@@ -44,16 +44,16 @@ public class AlexForDTUServer {
     private static Logger log = LoggerFactory.getLogger(AlexForDTUServer.class);
 
     private final EventLoopGroup bossGroup = new NioEventLoopGroup();
-    //开启两个线程池
+    // 开启两个线程池
     private final EventLoopGroup workGroup = new NioEventLoopGroup();
 
-    //启动装饰类
+    // 启动装饰类
     private final ServerBootstrap serverBootstrap = new ServerBootstrap();
 
-    //本机的ip地址
+    // 本机的ip地址
     private String ip;
 
-    //启动端口获取
+    // 启动端口获取
     @Value("${alex.port}")
     private int port;
 
@@ -77,44 +77,42 @@ public class AlexForDTUServer {
     public void start() {
 
         try {
-            //获取本机的ip地址
+            // 获取本机的ip地址
             ip = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e1) {
             e1.printStackTrace();
         }
 
         serverBootstrap.group(bossGroup, workGroup)
-                //非阻塞
+                // 非阻塞
                 .channel(NioServerSocketChannel.class)
-                //连接缓冲池的大小
+                // 连接缓冲池的大小
                 .option(ChannelOption.SO_BACKLOG, 1024)
-                //设置通道Channel的分配器
-                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
+                // 设置通道Channel的分配器
+                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT).childHandler(new ChannelInitializer<SocketChannel>() {
 
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         ChannelPipeline pipeline = socketChannel.pipeline();
                         pipeline.addLast(new ProcotolFrameDecoder()) // 帧解码器 【与自定义编解码器 MessageCodecSharable一起配置参数】
-                                .addLast(LOGGING_HANDLER)//日志
-                                .addLast(MESSAGE_CODEC)
-                                .addLast(new IdleStateHandler(5, 0, 0))//检测读空闲状态，时间为300s
-                                .addLast(new HeartBeatHandlerN())//心跳处理
-                                .addLast(new MessageClassifyHandler())//消息分类
-                                .addLast(new DeviceIdentityHandler())//设备上传身份指令，服务器回复应答
-                                .addLast(new PlcStatusHandler())//状态信息
-                                //异常处理
+                                .addLast(LOGGING_HANDLER)// 日志
+                                .addLast(MESSAGE_CODEC).addLast(new IdleStateHandler(5, 0, 0))// 检测读空闲状态，时间为300s
+                                .addLast(new HeartBeatHandlerN())// 心跳处理
+                                .addLast(new MessageClassifyHandler())// 消息分类
+                                .addLast(new DeviceIdentityHandler())// 设备上传身份指令，服务器回复应答
+                                .addLast(new PlcStatusHandler())// 状态信息
+                                // 异常处理
                                 .addLast("exception", exceptionHandler)
-                                //空闲检测
+                                // 空闲检测
                                 .addLast(new NettyServerHandler());
 
                     }
                 });
 
         ChannelFuture channelFuture = null;
-        //启动成功标识
+        // 启动成功标识
         boolean startFlag = false;
-        //启动失败时，多次启动，直到启动成功为止
+        // 启动失败时，多次启动，直到启动成功为止
         while (!startFlag) {
             try {
                 channelFuture = serverBootstrap.bind(port).sync();
@@ -123,16 +121,16 @@ public class AlexForDTUServer {
                 log.info("端口号：" + port + "已被占用！");
                 port++;
                 log.info("尝试一个新的端口：" + port);
-                //重新便规定端口号
+                // 重新便规定端口号
                 serverBootstrap.localAddress(new InetSocketAddress(port));
             }
         }
 
-        //服务端启动监听事件
+        // 服务端启动监听事件
         channelFuture.addListener(new GenericFutureListener<Future<? super Void>>() {
             @Override
             public void operationComplete(Future<? super Void> future) throws Exception {
-                //启动成功后的处理
+                // 启动成功后的处理
                 if (future.isSuccess()) {
                     log.info("netty dtu服务器启动成功，Started Successed:" + ip + ":" + port);
                 } else {
