@@ -26,13 +26,13 @@ public class SendMessageTask {
         SseMessage message = new SseMessage();
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         message.setData(LocalDateTime.now().format(format));
-        message.setDtuStatus(1);
+        message.setDtuStatus(0);
         message.setPlcId(01);
         message.setInletValve(0);
-        message.setSampleValve(1);
+        message.setSampleValve(0);
         message.setVentingValve(0);
-        message.setDtuStatus(1);
-        message.setSamplerStatus("01");
+        //message.setDtuStatus(1);
+        message.setSamplerStatus("00");
         //log.info("SendMessageTask:"+DeviceList.getDeviceVector().size());
         if(DeviceList.getDeviceVector().size() != 0){
             /**

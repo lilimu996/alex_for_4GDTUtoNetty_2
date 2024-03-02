@@ -29,6 +29,7 @@ public class PlcStatusHandler extends SimpleChannelInboundHandler<StatusMessage>
         if((message= (SseMessage) DeviceList.getDeviceVector().get(Integer.parseInt(statusMessage.getDeviceId())))!=null){
             String coilAddress=statusMessage.getAuxiliaryCoils();
             String outputCoil=statusMessage.getOutputCoil();
+            message.setDtuStatus(1);
             if(coilAddress.equals("040C")){
                 message.setInletValve(1);
             } else if (coilAddress.equals("040A")) {
