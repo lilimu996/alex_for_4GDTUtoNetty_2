@@ -21,7 +21,7 @@ public class DeviceIdentityHandler extends SimpleChannelInboundHandler<IdentityM
         //#todo:将设备信息保存至数据库
 
         //绑定设备和channel,便于调用
-        SessionFactory.getSession().bind(ctx.channel(),msg.getIccid());
+        SessionFactory.getSession().bind(ctx.channel(),msg.getIccId());
         //log.info("Iccid:"+msg.getIccid());
         //回复客服端
         // log.info("CommandEnum "+CommandEnum.UPLOAD_COMMAND.value);
