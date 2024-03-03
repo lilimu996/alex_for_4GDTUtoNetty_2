@@ -24,7 +24,7 @@ import java.util.Objects;
 public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implements PlcService {
     @Override
     public void controller(ControlMessage controlMessage) {
-        //前端传回plc站号，从数据库查询站号对应的iccId;
+        // 前端传回plc站号，从数据库查询站号对应的iccId;
 
         /**
          *
@@ -52,10 +52,15 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
             String checksum = "0000";
             // todo:从前端获取信息
             // String data PLC站号和控制方式，都由前端传回
+
+            // 无奈之举
+            if (Objects.isNull(controlMessage.getDeviceId())) {
+                controlMessage.setDeviceId("01");
+            }
             String data = controlMessage.getDeviceId() + controlMessage.getCommand();
-            if(controlMessage.getCommand().equals("03")){
-                SseMessage sseMessage=new SseMessage();
-                sseMessage=DeviceList.get(01);
+            if (controlMessage.getCommand().equals("03")) {
+                SseMessage sseMessage = new SseMessage();
+                sseMessage = DeviceList.get(01);
                 sseMessage.setSampleValve(0);
                 sseMessage.setInletValve(0);
                 sseMessage.setSampleValve(0);

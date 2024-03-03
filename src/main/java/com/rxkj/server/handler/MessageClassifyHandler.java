@@ -43,7 +43,7 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 String coilAddress = data.substring(2, 6);
                 String outputCoil = data.substring(6, 8);
 
-               /*
+               /*a
                 SseMessage message = new SseMessage();
                 if((message= (SseMessage) DeviceList.getDeviceVector().get(Integer.parseInt(deviceId)))!=null){
                     if(coilAddress.equals("0803")){
