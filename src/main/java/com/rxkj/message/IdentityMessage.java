@@ -6,12 +6,12 @@ import lombok.Data;
 public class IdentityMessage extends Message{
 
     private String imei;
-    private String iccid;
-    private String dtuv;
-    public IdentityMessage(String imei,String iccid,String dtuv){
+    private String iccId;
+    private String dtuV;
+    public IdentityMessage(String imei,String iccId,String dtuV){
         this.imei=imei;
-        this.iccid=iccid;
-        this.dtuv=dtuv;
+        this.iccId=iccId;
+        this.dtuV=dtuV;
     }
     public int getMessageType() {
         return IdentityMessage;
