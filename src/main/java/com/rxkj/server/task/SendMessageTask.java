@@ -43,10 +43,6 @@ public class SendMessageTask {
              *遍历设备Sse消息队列，并把队列中的每个消息推送至前端
              */
 
-            SseMessage sseMessage = DeviceList.getDeviceVector().get(1);
-
-            log.info("seeMessage:" + JSON.toJSONString(sseMessage));
-
 
             DeviceList.getDeviceVector().forEach(new Consumer<SseMessage>() {
                 /**

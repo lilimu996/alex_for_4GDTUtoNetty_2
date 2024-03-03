@@ -69,17 +69,17 @@ public class SseServiceImpl implements SseService {
     @Override
     public void sendMessage(SseMessage message) {
         message.setTotal(sseEmitterMap.size());
-        R<SseMessage> r = new R<SseMessage>();
+        R<SseMessage> r = new R<>();
         sseEmitterMap.forEach((uuid, sseEmiter) -> {
             try {
                 r.setCode(1);
                 r.setData(message);
 
                 /*
-                 sseEmiter.send(r, MediaType.APPLICATION_JSON);
+                 sseEmitter.send(r, MediaType.APPLICATION_JSON);
                  传递自定义类型
                  SseEmitter.SseEventBuilder event = SseEmitter.event().id(String.valueOf(1)).name("message").data(message);
-                 sseEmiter.send(r, MediaType.TEXT_EVENT_STREAM);
+                 sseEmitter.send(r, MediaType.TEXT_EVENT_STREAM);
                 */
                 sseEmiter.send(r, MediaType.APPLICATION_JSON);
             } catch (Exception ex) {
