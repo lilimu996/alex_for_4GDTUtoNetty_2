@@ -1,4 +1,3 @@
-
 spring.thymeleaf.prefix: classpath:/templates/
 
 #开发、生产环境配置
@@ -17,6 +16,17 @@ spring:
       force: true
       charset: utf-8
       enabled: true
+  redis:
+    host: 1.117.62.42
+    password: sahkbnk.?(da
+    database: 10
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+    port: 6379
+
 
 ##mybatis配置
 #mybatis.mapperLocations: classpath:mapper/*.xml

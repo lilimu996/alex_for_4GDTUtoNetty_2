@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rxkj.mapper.DeviceList;
 import com.rxkj.mapper.DtuMap;
 import com.rxkj.mapper.PlcMapper;
-import com.rxkj.entity.PlcDevices;
+import com.rxkj.entity.po.PlcDevices;
 import com.rxkj.enums.CommandEnum;
 import com.rxkj.enums.CommandLengthEnum;
 import com.rxkj.enums.KeywordEnum;

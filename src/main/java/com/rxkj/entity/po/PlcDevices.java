@@ -1,4 +1,4 @@
-package com.rxkj.entity;
+package com.rxkj.entity.po;
 
 import lombok.Data;
 
