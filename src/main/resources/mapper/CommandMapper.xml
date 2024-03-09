@@ -4,12 +4,4 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rxkj.mapper.CommandMapper">
 
-    <resultMap id="BaseResultMap" type="com.rxkj.entity.po.Command">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="name" column="name" jdbcType="VARCHAR"/>
-    </resultMap>
-
-    <sql id="Base_Column_List">
-        id,name
-    </sql>
 </mapper>

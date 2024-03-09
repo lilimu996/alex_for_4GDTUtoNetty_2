@@ -4,16 +4,4 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rxkj.mapper.OperationMapper">
 
-    <resultMap id="BaseResultMap" type="com.rxkj.entity.po.Operation">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="deviceid" column="deviceId" jdbcType="INTEGER"/>
-            <result property="userid" column="userId" jdbcType="INTEGER"/>
-            <result property="operateid" column="operateId" jdbcType="VARCHAR"/>
-            <result property="time" column="time" jdbcType="TIMESTAMP"/>
-    </resultMap>
-
-    <sql id="Base_Column_List">
-        id,deviceId,userId,
-        operateId,time
-    </sql>
 </mapper>
