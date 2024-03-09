@@ -1,6 +1,8 @@
 package com.rxkj.config;
 
 import com.rxkj.filter.JwtAuthenticationFilter;
+import com.rxkj.filter.SimpleAccessDeniedHandler;
+import com.rxkj.filter.SimpleAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -57,5 +59,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.cors();
+        http.exceptionHandling().accessDeniedHandler(new SimpleAccessDeniedHandler()).authenticationEntryPoint(new SimpleAuthenticationEntryPoint());
     }
 }
