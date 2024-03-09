@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -37,7 +38,7 @@ public class UserServiceImpl extends ServiceImpl<UsersMapper, Users> implements 
         try {
             authenticate = authenticationManager.authenticate(authenticationToken);
         } catch (AuthenticationException e) {
-            return R.error("登录失败");
+            return R.error("请检查用户名和密码");
         }
 
         MeiFenUser meiFenUser = (MeiFenUser) authenticate.getPrincipal();
