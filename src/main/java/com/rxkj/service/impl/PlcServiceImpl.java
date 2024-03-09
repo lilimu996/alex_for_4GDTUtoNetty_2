@@ -1,6 +1,7 @@
 package com.rxkj.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.rxkj.entity.bo.MeiFenUser;
 import com.rxkj.mapper.DeviceList;
 import com.rxkj.mapper.DtuMap;
 import com.rxkj.mapper.PlcMapper;
@@ -17,13 +18,19 @@ import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Objects;
 
 @Slf4j
 @Service
 public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implements PlcService {
+
+    @Resource
+    OperationServiceImpl operationService;
+
+
     @Override
-    public void controller(ControlMessage controlMessage) {
+    public void controller(ControlMessage controlMessage, MeiFenUser meiFenUser) {
         // 前端传回plc站号，从数据库查询站号对应的iccId;
 
         /**
@@ -71,5 +78,9 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
         } else {
             log.info("no Channel!");
         }
+        int deviceId = Integer.parseInt(controlMessage.getDeviceId());
+        String userNumbers = meiFenUser.getUser().getUserNumbers();
+        int command = Integer.parseInt(controlMessage.getCommand());
+        operationService.saveOperation(deviceId, userNumbers, command);
     }
 }

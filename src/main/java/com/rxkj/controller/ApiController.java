@@ -2,6 +2,7 @@ package com.rxkj.controller;
 
 import com.rxkj.common.R;
 import com.rxkj.entity.ControlMessage;
+import com.rxkj.entity.bo.MeiFenUser;
 import com.rxkj.server.handler.AlexForDTUHandler;
 import com.rxkj.message.StatusMessage;
 import com.rxkj.service.PlcService;
@@ -9,6 +10,7 @@ import com.rxkj.util.AlexUtil;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,9 +26,9 @@ public class ApiController {
     private PlcService plcService;
 
     @PostMapping("/commandToPlc")
-    public R<StatusMessage> hello(HttpServletRequest request, @RequestBody ControlMessage controlMessage) {
-        //调用service将command转发给channel
-        plcService.controller(controlMessage);
+    public R<StatusMessage> hello(@AuthenticationPrincipal MeiFenUser meiFenUser, HttpServletRequest request, @RequestBody ControlMessage controlMessage) {
+        // 调用service将command转发给channel
+        plcService.controller(controlMessage, meiFenUser);
         return R.success(new StatusMessage("01", "02", "02"));
     }
 
