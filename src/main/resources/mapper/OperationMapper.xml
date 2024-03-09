@@ -4,4 +4,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rxkj.mapper.OperationMapper">
 
+    <select id="getOperationList" resultType="com.rxkj.entity.vo.OperationListVo">
+        select u.user_name as userName,
+               c.name      as commandStr,
+               o.time,
+               o.device_id
+        from operation o
+                 left join command c on c.id = o.operate_id
+                 left join users u on o.user_numbers = u.user_numbers
+        where c.id = o.operate_id
+    </select>
 </mapper>

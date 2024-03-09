@@ -1,20 +1,14 @@
 package com.rxkj.codec;
 
-import java.util.List;
-
 import com.rxkj.check.DataCheckFormat;
-import com.rxkj.util.AlexSatic;
 import com.rxkj.util.AlexUtil;
-import org.apache.commons.codec.binary.Hex;
-import org.hibernate.type.TrueFalseType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.xml.crypto.Data;
+import java.util.List;
 
 /**
  * byte     1字节    （8位） -27~27-1 0 Byte 255

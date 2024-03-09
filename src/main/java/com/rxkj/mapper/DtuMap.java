@@ -1,7 +1,5 @@
 package com.rxkj.mapper;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelId;
 import org.springframework.util.CollectionUtils;
 
 import java.util.concurrent.ConcurrentHashMap;

@@ -1,5 +1,7 @@
 package com.rxkj.service;
 
+import com.rxkj.common.R;
+
 /**
 * @author zhanghaifeng
 * @description 针对表【operation】的数据库操作Service
@@ -9,4 +11,5 @@ public interface OperationService {
 
     void saveOperation(int deviceId, String userNumbers, int command);
 
+    R getOperationList();
 }

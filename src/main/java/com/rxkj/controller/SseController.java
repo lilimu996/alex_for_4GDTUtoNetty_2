@@ -1,17 +1,16 @@
 package com.rxkj.controller;
 
-import com.rxkj.message.MessageA;
 import com.rxkj.message.SseMessage;
 import com.rxkj.service.SseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.awt.*;
-import java.io.IOException;
 import java.util.UUID;
 
 @Slf4j

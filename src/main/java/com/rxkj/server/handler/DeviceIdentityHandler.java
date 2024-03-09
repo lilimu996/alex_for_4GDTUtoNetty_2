@@ -11,8 +11,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.security.Key;
-
 @Slf4j
 public class DeviceIdentityHandler extends SimpleChannelInboundHandler<IdentityMessage> {
     @Override

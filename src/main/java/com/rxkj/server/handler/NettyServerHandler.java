@@ -1,9 +1,9 @@
 package com.rxkj.server.handler;
 
-import com.rxkj.mapper.ChannelMap;
 import com.rxkj.enums.CommandEnum;
 import com.rxkj.enums.CommandLengthEnum;
 import com.rxkj.enums.KeywordEnum;
+import com.rxkj.mapper.ChannelMap;
 import com.rxkj.message.MessageA;
 import com.rxkj.server.session.SessionFactory;
 import com.rxkj.util.AlexUtil;

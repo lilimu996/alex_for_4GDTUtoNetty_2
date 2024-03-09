@@ -1,7 +1,5 @@
 package com.rxkj.enums;
 
-import com.rxkj.util.AlexUtil;
-
 public enum TimeoutEnum {
     //AlexUtil.bytesToHexString(new byte[]{(byte) 0x78})
     COMMON_TIMEOUT("0078","通用超时时间");

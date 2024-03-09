@@ -2,17 +2,15 @@ package com.rxkj.protocol;
 
 import com.rxkj.check.DataCheckFormat;
 import com.rxkj.enums.KeywordEnum;
-import com.rxkj.message.MessageOld;
 import com.rxkj.message.MessageA;
 import com.rxkj.util.AlexUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.List;
 
 /**

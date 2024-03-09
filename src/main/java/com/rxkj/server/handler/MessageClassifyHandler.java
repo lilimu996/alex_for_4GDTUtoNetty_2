@@ -1,13 +1,12 @@
 package com.rxkj.server.handler;
 
-import com.rxkj.mapper.DeviceList;
-import com.rxkj.mapper.DtuMap;
 import com.rxkj.message.*;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.rxkj.mapper.DtuMap.*;
+import static com.rxkj.mapper.DtuMap.addDtu;
+import static com.rxkj.mapper.DtuMap.getDtuByName;
 
 @Slf4j
 public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
