@@ -20,6 +20,8 @@ public class Users implements Serializable {
     @TableId
     private String userNumbers;
 
+    private Integer isRoot;
+
     /**
      *
      */

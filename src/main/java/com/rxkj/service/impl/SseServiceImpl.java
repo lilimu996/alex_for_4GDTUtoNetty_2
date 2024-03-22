@@ -68,7 +68,6 @@ public class SseServiceImpl implements SseService {
             try {
                 r.setCode(1);
                 r.setData(message);
-
                 /*
                  sseEmitter.send(r, MediaType.APPLICATION_JSON);
                  传递自定义类型

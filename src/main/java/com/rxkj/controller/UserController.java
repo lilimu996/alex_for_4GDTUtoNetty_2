@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rxkj.common.R;
+import com.rxkj.entity.bo.MeiFenUser;
 import com.rxkj.entity.dto.LoginDto;
 import com.rxkj.entity.po.Users;
 import com.rxkj.service.impl.UserServiceImpl;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -25,8 +27,14 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public R<String> login(@ModelAttribute LoginDto loginDto) {
+    public R login(@ModelAttribute LoginDto loginDto) {
         return userService.login(loginDto.getUserName(), loginDto.getPassword());
+    }
+
+    @GetMapping("/logout")
+    public R<String> logout(@AuthenticationPrincipal MeiFenUser meiFenUser) {
+        String userNumbers = meiFenUser.getUser().getUserNumbers();
+        return userService.logout(userNumbers);
     }
 
 
