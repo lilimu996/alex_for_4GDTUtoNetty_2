@@ -69,7 +69,9 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
             log.info("no channel!");
             return;
         }
+        log.info("DtuSerialNumber:",finalSampler.getDtuSerialNumber());
         ChannelId channelId = Maps.filterKeys(DtuMap.getDtuMap(), v->v.equals(finalSampler.getDtuSerialNumber())).entrySet().iterator().next().getKey();
+        log.info("channelId:",channelId);
         Channel channel = null;
         channel = ChannelMap.getChannelByName(channelId);
         //log.info("iccId:" + iccId);

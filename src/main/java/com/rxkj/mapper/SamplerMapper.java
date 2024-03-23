@@ -5,5 +5,5 @@ import com.rxkj.entity.po.Sampler;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface SamplerMap extends BaseMapper<Sampler> {
+public interface SamplerMapper extends BaseMapper<Sampler> {
 }

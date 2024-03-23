@@ -3,12 +3,12 @@ package com.rxkj.server.handler;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.rxkj.entity.po.DtuDevices;
 import com.rxkj.entity.po.Sampler;
-import com.rxkj.mapper.DeviceList;
 import com.rxkj.mapper.DtuMap;
+import com.rxkj.mapper.SamplerMapper;
 import com.rxkj.message.*;
 import com.rxkj.service.DtuService;
-import com.rxkj.service.PlcService;
 import com.rxkj.service.SamplerService;
+import com.rxkj.service.impl.SamplerServiceImpl;
 import com.rxkj.util.AlexUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -16,22 +16,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import java.util.Objects;
-
-import static com.rxkj.mapper.DtuMap.addDtu;
-import static com.rxkj.mapper.DtuMap.getDtuByName;
+import javax.annotation.Resource;
+import java.util.*;
 
 @Slf4j
 @Component
 public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
-    @Autowired
-    private DtuService dtuService;
-    @Autowired
-    private SamplerService samplerService;
+    @Resource
+    DtuService dtuService;
+//    @Autowired
+//    private SamplerMapper samplerMapper;
+
+    @Resource
+    SamplerService samplerService;
+   // private SamplerMapper samplerMapper;
+//    @Autowired
+//    private SamplerService samplerService;
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // Process the incoming message here
@@ -53,8 +53,9 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 String iccId = data.substring(30, 70);
                 String dtuV = data.substring(70, 78);
                 //int sampleKey = imei.substring(9,10);
-                int sampleKey = Integer.parseInt(imei.substring(0,5), 16);
-
+                int sampleKey = Integer.parseInt(imei.substring(0,6), 16);
+                log.info("imeisub:"+imei.substring(0,6));
+                log.info("sampleKey:"+sampleKey);
                 /**
                  * dtu连接后上报身份信息，以此身份信息和plc站号，煤粉取样器编号建立映射关系
                  * [iccId:plc:煤粉取样器num]
@@ -62,8 +63,9 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                  * */
                 //判断dtu序列号是否存在于数据库，不存在的话存入数据库
                 String serialNumber = data;
-                QueryWrapper<DtuDevices> qw = new QueryWrapper<>();
-                if(qw.eq("serial_number",serialNumber) != null){//dtu在数据库
+                Sampler serialNumberExists = samplerService.getOne(new QueryWrapper<Sampler>().eq("serial_number", serialNumber));
+                //samplerMapper.selectList(null);
+                if(!Objects.isNull(serialNumberExists)){//dtu在数据库
                     log.info("dtu上线:"+serialNumber);
                 }else{
                     DtuDevices devices=new DtuDevices();
@@ -81,6 +83,7 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                        // System.out.println("key: " + i + " value: " + sampleMap.get(i));
                         sampler.setPlcDevicesid(i);
                         sampler.setIdsampler(sampleMap.get(i));
+                        //samplerMapper.insert(sampler);
                         samplerService.save(sampler);
                     }
 //=======
