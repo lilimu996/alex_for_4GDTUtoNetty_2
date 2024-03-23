@@ -1,5 +1,6 @@
 package com.rxkj.entity.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.util.Date;

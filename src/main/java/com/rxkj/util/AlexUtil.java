@@ -2,8 +2,12 @@ package com.rxkj.util;
 
 import com.rxkj.enums.KeywordEnum;
 import com.rxkj.message.MessageA;
+import io.swagger.models.auth.In;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
 
 public class AlexUtil {
 
@@ -189,13 +193,49 @@ public class AlexUtil {
         }
         return msg;
     }
-
+    /***
+     * 根据传入的sampleKey计算plc和sampleId的映射关系
+     */
+    public  static Map<Integer,Integer> sampleMap(int sampleKey){
+        Map<Integer,Integer> sampleMap = new HashMap<Integer,Integer>();
+        for (int i = 1; i <= 8; i++) {
+            sampleMap.put(i,i+(sampleKey-1)*8);
+        }
+        return sampleMap;
+    }
+    /**
+     * 使用sample Id计算sampleKey
+     * */
+    public  static Integer getSampleKey(int sampleId){
+        return (sampleId-1)/8+1;
+    }
+    /**
+     * 使用sample id计算plc id
+     * */
+    public  static Integer getPlcId(int sampleId){
+        return sampleId-(AlexUtil.getSampleKey(sampleId)-1)*8;
+    }
     public static void main(String[] args) {
 //        String s = stringToHexString("01050000FF008C3A");
 //        System.out.println(s);
         byte[] bytes = {(byte) 0xAA, (byte) 0xAA, (byte) 0x08, (byte) 0x00, (byte) 0xFF};
         System.out.println(AlexUtil.bytesToHexString(substring(bytes, 3, 4)));
     }
-
+//    /**
+//     * 通过map value获取key
+//     * */
+//    public static ArrayList<String> getKey(Map map, Integer value){
+//        Set set = map.entrySet(); //通过entrySet()方法把map中的每个键值对变成对应成Set集合中的一个对象
+//        Iterator<Map.Entry<Integer, String>> iterator = set.iterator();
+//        ArrayList<String> arrayList = new ArrayList();
+//        while(iterator.hasNext()){
+//            //Map.Entry是一种类型，指向map中的一个键值对组成的对象
+//            Map.Entry<Integer, String> entry = iterator.next();
+//            if(entry.getValue().equals(value)){
+//                arrayList.add(entry.getKey());
+//            }
+//        }
+//        return arrayList;
+//    }
 
 }
