@@ -33,26 +33,26 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
 
     @Override
     protected void encode(ChannelHandlerContext ctx, MessageA msg, List<Object> outlist) throws Exception {
-        //开始encode
+        // 开始encode
         log.info("开始encode-------------------");
-        //校验码 2字节
+        // 校验码 2字节
         byte[] checkSum = {(byte) 0x33, (byte) 0x33};
-        //传输密匙key 4个字节
+        // 传输密匙key 4个字节
         byte[] key = {(byte) 0x33, (byte) 0x33, (byte) 0x33, (byte) 0x33};
         checkSum = AlexUtil.checksum(msg, key);
         ByteBuf out = ctx.alloc().buffer();
-        //写入魔数
+        // 写入魔数
         out.writeBytes(AlexUtil.hexStringToByteArray(KeywordEnum.CHANNEL_HEAD.value));
-        //写入长度
-//        log.info("hexst "+Integer.toString(msg.getLength()));
+        // 写入长度
+        // log.info("hexst "+Integer.toString(msg.getLength()));
         out.writeBytes(AlexUtil.hexStringToByteArray3(Integer.toHexString(msg.getLength())));
-//        log.info("updata to there  ");
-        //#  更新校验码
+        // log.info("updata to there  ");
+        //  更新校验码
         out.writeBytes(AlexUtil.hexStringToByteArray(AlexUtil.bytesToHexString(checkSum)));
-        //# 指令
+        // 指令
         out.writeBytes(AlexUtil.hexStringToByteArray(msg.getCommand()));
 
-        //#  数据
+        //  数据
         out.writeBytes(AlexUtil.hexStringToByteArray(msg.getData()));
         System.out.println("经过encode-------------");
         outlist.add(out);
@@ -64,41 +64,40 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         byte[] magic = new byte[2];
         msg.readBytes(magic);
         String magichex = AlexUtil.bytesToHexString(magic);
-//        log.info("magichex+++++"+magichex);
-        //获取长度
+        // 获取长度
         byte[] length = new byte[1];
         msg.readBytes(length);
-//        log.info("decode length  "+AlexUtil.bytesToHexString(length));
+        // log.info("decode length  "+AlexUtil.bytesToHexString(length));
         int lengthDec = Integer.parseInt(AlexUtil.bytesToHexString(length), 16);
         log.info("TH lenthDec  " + lengthDec);
-        //获取校验
+        // 获取校验
         byte[] checksum = new byte[2];
         msg.readBytes(checksum);
         String checksumhex = AlexUtil.bytesToHexString(checksum);
-        //获取指令
+        // 获取指令
         byte[] command = new byte[1];
         msg.readBytes(command);
         String commandhex = AlexUtil.bytesToHexString(command);
-        //获取数据
+        // 获取数据
         byte[] datas = new byte[lengthDec - 6];
         msg.readBytes(datas, 0, lengthDec - 6);
         String datashex = AlexUtil.bytesToHexString(datas);
-        //封装消息
+        // 封装消息
         MessageA message = new MessageA(magichex, lengthDec, checksumhex, commandhex, datashex);
         log.info("MessageA   " + message);
 
-        //out.add(message);
-        //数据校验部分
-        //key 33333333
-        //#todo:key可以保存在map中，每个通道一个key,在给客户端下发时保存
+        // out.add(message);
+        // 数据校验部分
+        // key 33333333
+        // todo:key可以保存在map中，每个通道一个key,在给客户端下发时保存
         byte[] key = {(byte) 0x33, (byte) 0x33, (byte) 0x33, (byte) 0x33};
         checksum = AlexUtil.checksum(message, key);
         if (!AlexUtil.bytesToHexString(checksum).equals(checksumhex)) {
             log.info("数据校验失败,数据包为:" + message + "  " + "校验码为:" + AlexUtil.bytesToHexString(checksum));
         }
         //
-        //序列化
-        //校验包头和校验码
+        // 序列化
+        // 校验包头和校验码
         if (dataCheckFormat.checkFormat(message)) {
             if (dataCheckFormat.checkSum(message)) {
                 log.info("CheckRight " + message);
@@ -125,12 +124,12 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         System.out.println(hexString); // Output: A
         int length=10;
         log.info("hexStringl "+AlexUtil.hexStringToByteArray(Integer.toHexString(length)));*/
-//        int length=Integer.parseInt("8",16);
-//        System.out.println(length);
-//        String hexString=Integer.toString(10);
-//
-//        log.info("num   "+hexString);
-        //log.info("num "+ Integer.toString(56));
+        // int length=Integer.parseInt("8",16);
+        // System.out.println(length);
+        // String hexString=Integer.toString(10);
+        //
+        // log.info("num   "+hexString);
+        // log.info("num "+ Integer.toString(56));
 
         String hex = Integer.toHexString(45);
         log.info("string " + hex);

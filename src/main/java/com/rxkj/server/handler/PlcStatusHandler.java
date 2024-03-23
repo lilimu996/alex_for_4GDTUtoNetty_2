@@ -22,7 +22,6 @@ public class PlcStatusHandler extends SimpleChannelInboundHandler<StatusMessage>
      */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, StatusMessage statusMessage) throws Exception {
-        // todo:plc状态信息，转发给前端
         // todo:服务器回复指令0xFE
         log.info("statusMessage " + statusMessage);
         int deviceId = Integer.parseInt(statusMessage.getDeviceId(),16);

@@ -47,28 +47,28 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             ChannelMap.addChannel(channelId, ctx.channel());
             log.info("客户端:{},连接netty服务器[IP:{}-->PORT:{}]", channelId, clientIp, clientPort);
             log.info("连接通道数量: {}", ChannelMap.getChannelMap().size());
-//            byte[] magic={(byte) 0xAA,(byte) 0xAA};
-//            String magichex= AlexUtil.bytesToHexString(magic);
+            // byte[] magic={(byte) 0xAA,(byte) 0xAA};
+            // String magichex= AlexUtil.bytesToHexString(magic);
             // 传输密匙key 4个字节
             byte[] key = {(byte) 0x33, (byte) 0x33, (byte) 0x33, (byte) 0x33};
             // 校验码 2个字节
             byte[] checkSum = {(byte) 0x00, (byte) 0x00};
             String checksumhex = AlexUtil.bytesToHexString(checkSum);
 
-//            byte[] command={(byte) 0x00};
-//            String commandhex=AlexUtil.bytesToHexString(command);
-            /*byte[] datas={(byte) 0x33,(byte) 0x33,(byte) 0x33,(byte) 0x33};
-            String datashex=AlexUtil.bytesToHexString(datas);*/
-//            int lengthDec=10;
-            // 构造message
+            // byte[] command={(byte) 0x00};
+            // String commandhex=AlexUtil.bytesToHexString(command);
+            // byte[] datas={(byte) 0x33,(byte) 0x33,(byte) 0x33,(byte) 0x33};
+            // String datashex=AlexUtil.bytesToHexString(datas);
+            // int lengthDec=10;
+            //  构造message
             MessageA message = new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.START_LENGTH.value, checksumhex, CommandEnum.START_COMMAND.value, KeywordEnum.KEY.value);
 
 
             log.info("启动消息 " + message);
             // 发送启动指令
-//            System.out.println("Client connected: " + ctx.channel().remoteAddress());
-//            ctx.writeAndFlush("Welcome to the server!\r\n");
-//            super.channelActive(ctx);
+            // System.out.println("Client connected: " + ctx.channel().remoteAddress());
+            // ctx.writeAndFlush("Welcome to the server!\r\n");
+            // super.channelActive(ctx);
             ctx.writeAndFlush(message);
             super.channelActive(ctx);
 
@@ -91,7 +91,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             // 删除连接
             // 删除session
             log.info("有一个客户端断开连接");
-            //#todo:用户连接上传通道信息后再断开，通道不会被删除（bug）
+            // todo:用户连接上传通道信息后再断开，通道不会被删除（bug）
             if (SessionFactory.getSession().getUserName(ctx.channel()) != null) {
                 SessionFactory.getSession().unbind(ctx.channel());
                 ChannelMap.getChannelMap().remove(channelId);
@@ -113,11 +113,6 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         log.info("加载客户端报文,客户端id:{},客户端消息:{}", ctx.channel().id(), msg);
-        // String data = String.valueOf(msg);
-        // Integer water = Integer.parseInt(data.substring(6,10),16);
-        // log.info("当前水位:{}cm",water);
-        // 响应客户端
-        // this.channelWrite(ctx.channel().id(), msg);
     }
 
    /* @Override
