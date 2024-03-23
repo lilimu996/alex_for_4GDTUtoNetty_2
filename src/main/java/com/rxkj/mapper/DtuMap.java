@@ -23,11 +23,11 @@ public class DtuMap {
     /**
      *  获取指定id的DTU
      */
-    public static String getDtuByName(String PlcId){
+    public static String getDtuByName(ChannelId channelId){
         if(CollectionUtils.isEmpty(DTU_MAP)){
             return null;
         }
-        return DTU_MAP.get(PlcId);
+        return DTU_MAP.get(channelId);
     }
     /**
      *  将id和对应的DTU添加到ConcurrentHashMap
