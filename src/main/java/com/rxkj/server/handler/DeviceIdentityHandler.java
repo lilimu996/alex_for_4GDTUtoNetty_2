@@ -16,7 +16,7 @@ public class DeviceIdentityHandler extends SimpleChannelInboundHandler<IdentityM
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, IdentityMessage msg) throws Exception {
         // log.info("身份信息  "+msg);
-        //#todo:将设备信息保存至数据库
+        // todo:将设备信息保存至数据库
 
         // 绑定设备和channel,便于调用
         SessionFactory.getSession().bind(ctx.channel(), msg.getIccId());

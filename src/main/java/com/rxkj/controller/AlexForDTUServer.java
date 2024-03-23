@@ -90,7 +90,7 @@ public class AlexForDTUServer {
                         ChannelPipeline pipeline = socketChannel.pipeline();
                         pipeline.addLast(new ProcotolFrameDecoder()) // 帧解码器 【与自定义编解码器 MessageCodecSharable一起配置参数】
                                 .addLast(LOGGING_HANDLER)// 日志
-                                .addLast(MESSAGE_CODEC)
+                                .addLast(MESSAGE_CODEC) // encode
                                 .addLast(new IdleStateHandler(20, 0, 0))// 检测读空闲状态，时间为300s
                                 .addLast(new HeartBeatHandlerN())// 心跳处理
                                 .addLast(new MessageClassifyHandler())// 消息分类

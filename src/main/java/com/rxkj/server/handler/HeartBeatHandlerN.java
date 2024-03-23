@@ -16,17 +16,17 @@ public class HeartBeatHandlerN extends ChannelInboundHandlerAdapter {
     private static final ByteBuf HEARTBEAT_PACKET = Unpooled.copiedBuffer("Heartbeat", CharsetUtil.UTF_8);
 
 
-
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
             if (e.state() == IdleState.READER_IDLE) {
+
                 // Send a heartbeat packet to keep the connection alive
-                /* MessageA messageA=new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.RESPONSE_COMMAND.value,
-                        checksum, CommandEnum.RESPONSE_COMMAND.value,data);*/
-               // ctx.writeAndFlush();
-                //5s读空闲触发心跳事件
+                // MessageA messageA=new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.RESPONSE_COMMAND.value,
+                //      checksum, CommandEnum.RESPONSE_COMMAND.value,data);
+                // ctx.writeAndFlush();
+                // 5s读空闲触发心跳事件
 
                 log.info("beat+++++++++");
             }
