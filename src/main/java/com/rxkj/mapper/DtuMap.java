@@ -13,11 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DtuMap {
     /**
-     * 管理一个全局map，保存连接进服务端的plc和他对应的dtu
+     * 管理一个全局map，保存dtu和他对应的channel id
      */
-    private static final ConcurrentHashMap<String, String> DTU_MAP = new ConcurrentHashMap<>(128);
+    private static final ConcurrentHashMap<ChannelId, String> DTU_MAP = new ConcurrentHashMap<>(128);
 
-    public static ConcurrentHashMap<String, String> getDtuMap() {
+    public static ConcurrentHashMap<ChannelId, String> getDtuMap() {
         return DTU_MAP;
     }
     /**
@@ -32,8 +32,8 @@ public class DtuMap {
     /**
      *  将id和对应的DTU添加到ConcurrentHashMap
      */
-    public static void addDtu(String PlcId,String DtuId){
-        DTU_MAP.put(PlcId,DtuId);
+    public static void addDtu(ChannelId channelId,String DtuId){
+        DTU_MAP.put(channelId,DtuId);
     }
 
     /**
