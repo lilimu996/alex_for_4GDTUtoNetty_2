@@ -5,6 +5,8 @@ import com.rxkj.message.MessageA;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AlexUtil {
 
@@ -190,7 +192,22 @@ public class AlexUtil {
         }
         return msg;
     }
-
+    /***
+     * 根据传入的sampleKey计算plc和sampleId的映射关系
+     */
+    public  static Map<Integer,Integer> sampleMap(int sampleKey){
+        Map<Integer,Integer> sampleMap = new HashMap<Integer,Integer>();
+        for (int i = 1; i <= 8; i++) {
+            sampleMap.put(i,i+(sampleKey-1)*8);
+        }
+        return sampleMap;
+    }
+    /**
+     * 使用sample Id计算sampleKey
+     * */
+    public  static Integer getSampleKey(int sampleId){
+        return (sampleId-1)/8+1;
+    }
     public static void main(String[] args) {
 //        String s = stringToHexString("01050000FF008C3A");
 //        System.out.println(s);

@@ -2,11 +2,14 @@ package com.rxkj.server.handler;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.rxkj.entity.po.DtuDevices;
+import com.rxkj.entity.po.Sampler;
 import com.rxkj.mapper.DeviceList;
 import com.rxkj.mapper.DtuMap;
 import com.rxkj.message.*;
 import com.rxkj.service.DtuService;
 import com.rxkj.service.PlcService;
+import com.rxkj.service.SamplerService;
+import com.rxkj.util.AlexUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.rxkj.mapper.DtuMap.*;
 
@@ -22,6 +27,8 @@ import static com.rxkj.mapper.DtuMap.*;
 public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     private DtuService dtuService;
+    @Autowired
+    private SamplerService samplerService;
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // Process the incoming message here
@@ -37,11 +44,14 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
         // 从MessageA中读取command，根据command将Message分类成不同的消息
         switch (command) {
             case "01":
+                //imei格式:00001-FF:FF:FF:FF:FF
                 String imei = data.substring(0, 30);
-                //iccid格式:00001-FF:FF:FF:FF:FF
+                //iccId格式:格式说明：5位版本号-MAC1:MAC2:MAC3:MAC4:MAC5:MAC6
                 String iccId = data.substring(30, 70);
-                //dtuv格式:格式说明：5位版本号-MAC1:MAC2:MAC3:MAC4:MAC5:MAC6
                 String dtuV = data.substring(70, 78);
+                //int sampleKey = imei.substring(9,10);
+                int sampleKey = Integer.parseInt(imei.substring(0,5), 16);
+
                 /**
                  * dtu连接后上报身份信息，以此身份信息和plc站号，煤粉取样器编号建立映射关系
                  * [iccId:plc:煤粉取样器num]
@@ -59,9 +69,18 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                     if(dtuService.save(devices)){
                         log.info("保存dtu:"+serialNumber);
                     }
+                    //dtu第一次上线，使用sampleKey计算dtu对应的sample id并存入数据库
+                    Map<Integer,Integer> sampleMap = new HashMap<Integer,Integer>();
+                    sampleMap = AlexUtil.sampleMap(sampleKey);
+                    Sampler sampler = new Sampler();
+                    sampler.setDtuSerialNumber(serialNumber);
+                    for (Integer i : sampleMap.keySet()) {
+                       // System.out.println("key: " + i + " value: " + sampleMap.get(i));
+                        sampler.setPlcDevicesid(i);
+                        sampler.setIdsampler(sampleMap.get(i));
+                        samplerService.save(sampler);
+                    }
                 }
-
-
 
                 // 判断dtu设备号是否在DtuMap中，如果不存在则将dtu设备号和plcId存入DtuMap
                 //dtumap保存dtu serialNumber和channel id,plc id和sampler id对应在0x06建立

@@ -41,7 +41,7 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
          **/
 
         // String iccId="1100000000000000000000000000000000000011";
-        // String iccId="0909090978303000000000000000110000000000";
+        String iccId="0909090978303000000000000000110000000000";
         //todo:从dtumap获得serialNumber,使用sampler id获得plc id
         //String iccId = DtuMap.getDtuByName("01");
         Channel channel = null;
