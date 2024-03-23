@@ -142,6 +142,7 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 ctx.fireChannelRead(modifyMessage);
                 break;
             case "06":
+
                 //todo:dtu上传设备状态的实现
             case "FE":
                 ResponseMessage responseMessage = new ResponseMessage(magic, length, checksum, command, data);

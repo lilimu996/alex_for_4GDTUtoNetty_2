@@ -12,10 +12,10 @@ import java.util.Vector;
  */
 @Slf4j
 public class DeviceList {
-    private static final Vector<SseMessage> DEVICE_VECTOR = new Vector<SseMessage>(32, 16);
+    private static final Vector<SseMessage> DEVICE_VECTOR = new Vector<SseMessage>(256, 128);
 
     public static void initDEVICE_VECTOR() {
-        for (int i = 0; i < 32; i++) {
+        for (int i = 0; i < 256; i++) {
             SseMessage sseMessage = new SseMessage();
             sseMessage.setDtuStatus(-1);
             sseMessage.setInletValve(0);

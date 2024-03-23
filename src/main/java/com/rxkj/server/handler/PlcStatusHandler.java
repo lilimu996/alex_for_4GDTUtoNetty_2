@@ -25,7 +25,7 @@ public class PlcStatusHandler extends SimpleChannelInboundHandler<StatusMessage>
         // todo:plc状态信息，转发给前端
         // todo:服务器回复指令0xFE
         log.info("statusMessage " + statusMessage);
-        int deviceId = Integer.parseInt(statusMessage.getDeviceId());
+        int deviceId = Integer.parseInt(statusMessage.getDeviceId(),16);
         SseMessage message = DeviceList.getDeviceVector().get(deviceId);
         // if ((message = (SseMessage) DeviceList.getDeviceVector().get(Integer.parseInt(statusMessage.getDeviceId()))) != null) {
         String coilAddress = statusMessage.getAuxiliaryCoils();
