@@ -1,7 +1,5 @@
 package com.rxkj.enums;
 
-import com.rxkj.util.AlexUtil;
-
 public enum CommandEnum {
 
    //AlexUtil.bytesToHexString(new byte[]{(byte) 0x00})

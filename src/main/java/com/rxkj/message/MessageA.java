@@ -1,8 +1,6 @@
 package com.rxkj.message;
 
-import com.rxkj.util.AlexUtil;
 import lombok.Data;
-import lombok.ToString;
 
 @Data
 //@ToString(callSuper = true)

@@ -1,7 +1,7 @@
 package com.rxkj.mapper;
 
-import com.rxkj.entity.po.Command;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.rxkj.entity.po.Command;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

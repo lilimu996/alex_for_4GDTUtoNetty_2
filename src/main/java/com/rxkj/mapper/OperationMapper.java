@@ -2,7 +2,10 @@ package com.rxkj.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.rxkj.entity.po.Operation;
+import com.rxkj.entity.vo.OperationListVo;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
 * @author zhanghaifeng
@@ -13,6 +16,8 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface OperationMapper extends BaseMapper<Operation> {
+
+    List<OperationListVo> getOperationList();
 
 }
 

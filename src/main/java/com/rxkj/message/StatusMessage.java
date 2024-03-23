@@ -1,6 +1,5 @@
 package com.rxkj.message;
 
-import com.alibaba.druid.support.spring.stat.annotation.Stat;
 import lombok.Data;
 
 @Data

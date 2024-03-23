@@ -2,6 +2,7 @@ package com.rxkj.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.rxkj.entity.ControlMessage;
 import com.rxkj.entity.bo.MeiFenUser;
 import com.rxkj.entity.po.Sampler;
 import com.rxkj.mapper.ChannelMap;
@@ -12,13 +13,15 @@ import com.rxkj.entity.po.PlcDevices;
 import com.rxkj.enums.CommandEnum;
 import com.rxkj.enums.CommandLengthEnum;
 import com.rxkj.enums.KeywordEnum;
-import com.rxkj.entity.ControlMessage;
+import com.rxkj.mapper.DeviceList;
+import com.rxkj.mapper.DtuMap;
+import com.rxkj.mapper.PlcMapper;
 import com.rxkj.message.MessageA;
 import com.rxkj.message.SseMessage;
-import com.rxkj.service.PlcService;
 import com.rxkj.server.session.SessionFactory;
 import com.rxkj.service.SamplerService;
 import com.rxkj.util.AlexUtil;
+import com.rxkj.service.PlcService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 import io.swagger.models.auth.In;
@@ -83,6 +86,9 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
             }
             //String data = controlMessage.getDeviceId() + controlMessage.getCommand();
             String data = sampler.getPlcDevicesid().toString() + controlMessage.getCommand();
+
+//            String data = controlMessage.getDeviceId() + controlMessage.getCommand();
+            // 这个地方好像没用
             if (controlMessage.getCommand().equals("03")) {
                 SseMessage sseMessage = new SseMessage();
                 sseMessage = DeviceList.get(01);
@@ -90,12 +96,14 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
                 sseMessage.setInletValve(0);
                 sseMessage.setSampleValve(0);
             }
+
             MessageA messageA = new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.UPLOAD_STATUS_LENGTH.value, checksum, CommandEnum.CONTROLLER_COMMAND.value, data);
             log.info("responseMsg  " + messageA);
             channel.writeAndFlush(messageA);
         } else {
             log.info("no Channel!");
         }
+        // 异步写日志 后续可引入消息中间件
         int deviceId = Integer.parseInt(controlMessage.getDeviceId());
         String userNumbers = meiFenUser.getUser().getUserNumbers();
         int command = Integer.parseInt(controlMessage.getCommand());

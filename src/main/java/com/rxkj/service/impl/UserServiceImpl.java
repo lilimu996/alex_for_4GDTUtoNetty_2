@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UsersMapper, Users> implements UserService {
@@ -30,7 +29,7 @@ public class UserServiceImpl extends ServiceImpl<UsersMapper, Users> implements 
     AuthenticationManager authenticationManager;
 
     @Override
-    public R<String> login(String userName, String password) {
+    public R<HashMap<String, Object>> login(String userName, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userName, password);
 
         Authentication authenticate = null;
@@ -38,7 +37,7 @@ public class UserServiceImpl extends ServiceImpl<UsersMapper, Users> implements 
         try {
             authenticate = authenticationManager.authenticate(authenticationToken);
         } catch (AuthenticationException e) {
-            return R.error("登录失败");
+            return R.error("请检查用户名和密码");
         }
 
         MeiFenUser meiFenUser = (MeiFenUser) authenticate.getPrincipal();
@@ -50,9 +49,24 @@ public class UserServiceImpl extends ServiceImpl<UsersMapper, Users> implements 
 
         Map<String, Object> map = new HashMap<>();
         map.put("userNumbers", userNumbers);
-        redisUtil.set(Commons.REDIS_KEY_MEI_FEN_USER + userNumbers, meiFenUser);
+        redisUtil.set(Commons.REDIS_KEY_MEI_FEN_USER + userNumbers, meiFenUser, RedisUtil.ONE_HOUR);
 
         String token = JwtUtil.sign(map);
-        return R.success(token);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("token", token);
+        Integer isRoot = meiFenUser.getUser().getIsRoot();
+        if (isRoot.equals(1)) {
+            resultMap.put("identify", "superAdmin");
+        } else {
+            resultMap.put("identify", "admin");
+        }
+
+        return R.success(resultMap);
+    }
+
+    @Override
+    public R<String> logout(String userNumbers) {
+        redisUtil.delete(Commons.REDIS_KEY_MEI_FEN_USER + userNumbers);
+        return R.success();
     }
 }

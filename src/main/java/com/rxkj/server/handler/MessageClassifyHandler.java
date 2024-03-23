@@ -20,7 +20,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.rxkj.mapper.DtuMap.*;
+import java.util.Objects;
+
+import static com.rxkj.mapper.DtuMap.addDtu;
+import static com.rxkj.mapper.DtuMap.getDtuByName;
 
 @Slf4j
 @Component
@@ -80,6 +83,11 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                         sampler.setIdsampler(sampleMap.get(i));
                         samplerService.save(sampler);
                     }
+//=======
+//                // 判断dtu设备号是否在DtuMap中，如果不存在则将dtu设备号和plcId存入DtuMap
+//                if (Objects.isNull(getDtuByName("01"))) {
+//                    addDtu("01", iccId);
+//>>>>>>> eb59669a8af619a73e838a85c8e8b51eaebb0a31
                 }
 
                 // 判断dtu设备号是否在DtuMap中，如果不存在则将dtu设备号和plcId存入DtuMap
@@ -117,9 +125,11 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 ctx.fireChannelRead(statusMessage);
                 break;
             case "03":
-                /*ControlMessage controlMessage=new ControlMessage(deviceId,command);
+                /*
+                ControlMessage controlMessage=new ControlMessage(deviceId,command);
                 log.info("controlMessage "+controlMessage.getMessageType());
-                ctx.fireChannelRead(controlMessage);*/
+                ctx.fireChannelRead(controlMessage);
+                */
                 break;
             case "04":
                 MaintenanceMessage maintenanceMessage = new MaintenanceMessage(magic, length, checksum, command, data);
@@ -141,7 +151,6 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
             default:
                 log.info("不存在相匹配的命令！");
         }
-
     }
 
     private String processMessage(String message) {

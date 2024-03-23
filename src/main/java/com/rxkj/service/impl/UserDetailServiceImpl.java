@@ -23,9 +23,8 @@ public class UserDetailServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         Users user = usersMapper.selectOne(new QueryWrapper<Users>().eq("user_name", userName));
         if (Objects.isNull(user)) {
-            throw new InternalAuthenticationServiceException("用户不存在");
+            throw new UsernameNotFoundException("用户不存在");
         }
-
         MeiFenUser meiFenUser = new MeiFenUser();
         meiFenUser.setUser(user);
         return meiFenUser;

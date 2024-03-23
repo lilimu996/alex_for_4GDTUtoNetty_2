@@ -1,6 +1,5 @@
 package com.rxkj.mapper;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 import org.springframework.util.CollectionUtils;
 
@@ -32,7 +31,7 @@ public class DtuMap {
     /**
      *  将id和对应的DTU添加到ConcurrentHashMap
      */
-    public static void addDtu(ChannelId channelId,String DtuId){
+    public static void addDtu(ChannelId channelId, String DtuId){
         DTU_MAP.put(channelId,DtuId);
     }
 

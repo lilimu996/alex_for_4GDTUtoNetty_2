@@ -1,34 +1,28 @@
 package com.rxkj.controller;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-
-import com.rxkj.server.handler.*;
 import com.rxkj.protocol.MessageCodecSharable;
 import com.rxkj.protocol.ProcotolFrameDecoder;
 import com.rxkj.server.handler.*;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 /**
  * netty dtu服务端
@@ -95,18 +89,17 @@ public class AlexForDTUServer {
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         ChannelPipeline pipeline = socketChannel.pipeline();
                         pipeline.addLast(new ProcotolFrameDecoder()) // 帧解码器 【与自定义编解码器 MessageCodecSharable一起配置参数】
-                                .addLast(LOGGING_HANDLER)//日志
+                                .addLast(LOGGING_HANDLER)// 日志
                                 .addLast(MESSAGE_CODEC)
-                                .addLast(new IdleStateHandler(20, 0, 0))//检测读空闲状态，时间为300s
-                                .addLast(new HeartBeatHandlerN())//心跳处理
-                                .addLast(new MessageClassifyHandler())//消息分类
-                                .addLast(new DeviceIdentityHandler())//设备上传身份指令，服务器回复应答
-                                .addLast(new PlcStatusHandler())//状态信息
-                                //异常处理
+                                .addLast(new IdleStateHandler(20, 0, 0))// 检测读空闲状态，时间为300s
+                                .addLast(new HeartBeatHandlerN())// 心跳处理
+                                .addLast(new MessageClassifyHandler())// 消息分类
+                                .addLast(new DeviceIdentityHandler())// 设备上传身份指令，服务器回复应答
+                                .addLast(new PlcStatusHandler())// 状态信息
+                                // 异常处理
                                 .addLast("exception", exceptionHandler)
                                 // 空闲检测
                                 .addLast(new NettyServerHandler());
-
                     }
                 });
 

@@ -8,15 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import javax.print.attribute.standard.Media;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Slf4j
 @Service
@@ -74,7 +68,6 @@ public class SseServiceImpl implements SseService {
             try {
                 r.setCode(1);
                 r.setData(message);
-
                 /*
                  sseEmitter.send(r, MediaType.APPLICATION_JSON);
                  传递自定义类型

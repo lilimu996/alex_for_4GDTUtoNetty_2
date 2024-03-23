@@ -1,15 +1,13 @@
 package com.rxkj.server.handler;
 
-import java.util.concurrent.TimeUnit;
-
 import com.rxkj.util.AlexUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 心跳处理
