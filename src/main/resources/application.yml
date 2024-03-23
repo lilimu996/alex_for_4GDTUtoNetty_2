@@ -17,8 +17,8 @@ spring:
       charset: utf-8
       enabled: true
   redis:
-    host: 1.117.62.42
-    password: sahkbnk.?(da
+    host: localhost
+    password:
     database: 10
     jedis:
       pool:

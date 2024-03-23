@@ -64,7 +64,10 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
             if (Objects.isNull(controlMessage.getDeviceId())) {
                 controlMessage.setDeviceId("01");
             }
+
             String data = controlMessage.getDeviceId() + controlMessage.getCommand();
+
+            // 这个地方好像没用
             if (controlMessage.getCommand().equals("03")) {
                 SseMessage sseMessage = new SseMessage();
                 sseMessage = DeviceList.get(01);
@@ -72,12 +75,14 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
                 sseMessage.setInletValve(0);
                 sseMessage.setSampleValve(0);
             }
+
             MessageA messageA = new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.UPLOAD_STATUS_LENGTH.value, checksum, CommandEnum.CONTROLLER_COMMAND.value, data);
             log.info("responseMsg  " + messageA);
             channel.writeAndFlush(messageA);
         } else {
             log.info("no Channel!");
         }
+        // 异步写日志 后续可引入消息中间件
         int deviceId = Integer.parseInt(controlMessage.getDeviceId());
         String userNumbers = meiFenUser.getUser().getUserNumbers();
         int command = Integer.parseInt(controlMessage.getCommand());

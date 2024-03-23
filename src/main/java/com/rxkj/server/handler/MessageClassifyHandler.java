@@ -5,6 +5,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
+
 import static com.rxkj.mapper.DtuMap.addDtu;
 import static com.rxkj.mapper.DtuMap.getDtuByName;
 
@@ -29,7 +31,7 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 String iccId = data.substring(30, 70);
                 String dtuV = data.substring(70, 78);
                 // 判断dtu设备号是否在DtuMap中，如果不存在则将dtu设备号和plcId存入DtuMap
-                if (getDtuByName("01") == null) {
+                if (Objects.isNull(getDtuByName("01"))) {
                     addDtu("01", iccId);
                 }
                 IdentityMessage identityMessage = new IdentityMessage(imei, iccId, dtuV);
@@ -61,9 +63,11 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 ctx.fireChannelRead(statusMessage);
                 break;
             case "03":
-                /*ControlMessage controlMessage=new ControlMessage(deviceId,command);
+                /*
+                ControlMessage controlMessage=new ControlMessage(deviceId,command);
                 log.info("controlMessage "+controlMessage.getMessageType());
-                ctx.fireChannelRead(controlMessage);*/
+                ctx.fireChannelRead(controlMessage);
+                */
                 break;
             case "04":
                 MaintenanceMessage maintenanceMessage = new MaintenanceMessage(magic, length, checksum, command, data);
@@ -83,7 +87,6 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
             default:
                 log.info("不存在相匹配的命令！");
         }
-
     }
 
     private String processMessage(String message) {
