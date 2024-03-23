@@ -29,7 +29,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.google.common.collect.Maps;
+import org.springframework.util.CollectionUtils;
+
 import javax.annotation.Resource;
+import java.util.Collection;
 import java.util.Objects;
 
 @Slf4j
@@ -62,6 +65,10 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
         qw.eq("idsampler",samplerId);
         sampler = samplerService.getOne(qw);
         Sampler finalSampler = sampler;
+        if(CollectionUtils.isEmpty(DtuMap.getDtuMap())){
+            log.info("no channel!");
+            return;
+        }
         ChannelId channelId = Maps.filterKeys(DtuMap.getDtuMap(), v->v.equals(finalSampler.getDtuSerialNumber())).entrySet().iterator().next().getKey();
         Channel channel = null;
         channel = ChannelMap.getChannelByName(channelId);
