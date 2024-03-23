@@ -8,8 +8,10 @@ import com.rxkj.mapper.SamplerMapper;
 import com.rxkj.message.*;
 import com.rxkj.service.DtuService;
 import com.rxkj.service.SamplerService;
+import com.rxkj.service.impl.DtuServiceImpl;
 import com.rxkj.service.impl.SamplerServiceImpl;
 import com.rxkj.util.AlexUtil;
+import com.rxkj.util.SpringUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,18 +22,22 @@ import javax.annotation.Resource;
 import java.util.*;
 
 @Slf4j
-@Component
 public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
-    @Resource
-    DtuService dtuService;
+
+    private static DtuServiceImpl dtuService;
 //    @Autowired
 //    private SamplerMapper samplerMapper;
 
-    @Resource
-    SamplerService samplerService;
-   // private SamplerMapper samplerMapper;
+    private static SamplerServiceImpl samplerService;
+    // private SamplerMapper samplerMapper;
 //    @Autowired
 //    private SamplerService samplerService;
+
+    static {
+        dtuService = SpringUtils.getBean(DtuServiceImpl.class);
+        samplerService = SpringUtils.getBean(SamplerServiceImpl.class);
+    }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // Process the incoming message here
@@ -47,43 +53,43 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
         // 从MessageA中读取command，根据command将Message分类成不同的消息
         switch (command) {
             case "01":
-                //imei格式:00001-FF:FF:FF:FF:FF
+                // imei格式:00001-FF:FF:FF:FF:FF
                 String imei = data.substring(0, 30);
-                //iccId格式:格式说明：5位版本号-MAC1:MAC2:MAC3:MAC4:MAC5:MAC6
+                // iccId格式:格式说明：5位版本号-MAC1:MAC2:MAC3:MAC4:MAC5:MAC6
                 String iccId = data.substring(30, 70);
                 String dtuV = data.substring(70, 78);
-                //int sampleKey = imei.substring(9,10);
-                int sampleKey = Integer.parseInt(imei.substring(0,6), 16);
-                log.info("imeisub:"+imei.substring(0,6));
-                log.info("sampleKey:"+sampleKey);
+                // int sampleKey = imei.substring(9,10);
+                int sampleKey = Integer.parseInt(imei.substring(0, 6), 16);
+                log.info("imeisub:" + imei.substring(0, 6));
+                log.info("sampleKey:" + sampleKey);
                 /**
                  * dtu连接后上报身份信息，以此身份信息和plc站号，煤粉取样器编号建立映射关系
                  * [iccId:plc:煤粉取样器num]
                  * 一个mac对应站号为01-08的plc,一台plc对应一台煤粉取样器，煤粉取样器号码唯一。
                  * */
-                //判断dtu序列号是否存在于数据库，不存在的话存入数据库
+                // 判断dtu序列号是否存在于数据库，不存在的话存入数据库
                 String serialNumber = data;
-                Sampler serialNumberExists = samplerService.getOne(new QueryWrapper<Sampler>().eq("serial_number", serialNumber));
-                //samplerMapper.selectList(null);
-                if(!Objects.isNull(serialNumberExists)){//dtu在数据库
-                    log.info("dtu上线:"+serialNumber);
-                }else{
-                    DtuDevices devices=new DtuDevices();
+                Sampler serialNumberExists = samplerService.getOne(new QueryWrapper<Sampler>().eq("idsampler", serialNumber));
+                // samplerMapper.selectList(null);
+                if (!Objects.isNull(serialNumberExists)) {// dtu在数据库
+                    log.info("dtu上线:" + serialNumber);
+                } else {
+                    DtuDevices devices = new DtuDevices();
                     devices.setUptime(new Date());
                     devices.setSerialNumber(serialNumber);
-                    if(dtuService.save(devices)){
-                        log.info("保存dtu:"+serialNumber);
+                    if (dtuService.save(devices)) {
+                        log.info("保存dtu:" + serialNumber);
                     }
-                    //dtu第一次上线，使用sampleKey计算dtu对应的sample id并存入数据库
-                    Map<Integer,Integer> sampleMap = new HashMap<Integer,Integer>();
+                    // dtu第一次上线，使用sampleKey计算dtu对应的sample id并存入数据库
+                    Map<Integer, Integer> sampleMap = new HashMap<Integer, Integer>();
                     sampleMap = AlexUtil.sampleMap(sampleKey);
                     Sampler sampler = new Sampler();
                     sampler.setDtuSerialNumber(serialNumber);
                     for (Integer i : sampleMap.keySet()) {
-                       // System.out.println("key: " + i + " value: " + sampleMap.get(i));
+                        // System.out.println("key: " + i + " value: " + sampleMap.get(i));
                         sampler.setPlcDevicesid(i);
                         sampler.setIdsampler(sampleMap.get(i));
-                        //samplerMapper.insert(sampler);
+                        // samplerMapper.insert(sampler);
                         samplerService.save(sampler);
                     }
 //=======
@@ -94,8 +100,8 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 }
 
                 // 判断dtu设备号是否在DtuMap中，如果不存在则将dtu设备号和plcId存入DtuMap
-                //dtumap保存dtu serialNumber和channel id,plc id和sampler id对应在0x06建立
-                DtuMap.addDtu(ctx.channel().id(),serialNumber);
+                // dtumap保存dtu serialNumber和channel id,plc id和sampler id对应在0x06建立
+                DtuMap.addDtu(ctx.channel().id(), serialNumber);
                 /*if (getDtuByName("01") == null) {
                     addDtu("01", iccId);
                 }*/
@@ -146,7 +152,7 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 break;
             case "06":
 
-                //todo:dtu上传设备状态的实现
+                // todo:dtu上传设备状态的实现
             case "FE":
                 ResponseMessage responseMessage = new ResponseMessage(magic, length, checksum, command, data);
                 log.info("responseMessage  " + responseMessage.getMessageType());

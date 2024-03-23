@@ -5,7 +5,9 @@ import com.rxkj.entity.ControlMessage;
 import com.rxkj.entity.bo.MeiFenUser;
 import com.rxkj.message.StatusMessage;
 import com.rxkj.server.handler.AlexForDTUHandler;
+import com.rxkj.service.DtuService;
 import com.rxkj.service.PlcService;
+import com.rxkj.service.impl.DtuServiceImpl;
 import com.rxkj.util.AlexUtil;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
