@@ -7,7 +7,7 @@ server:
     context-path: /
 
 alex:
-  port: 8896
+  port: 7412
 
 file:
   image-path: /myimages

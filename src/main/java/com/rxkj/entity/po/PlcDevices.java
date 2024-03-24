@@ -1,5 +1,6 @@
 package com.rxkj.entity.po;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -8,6 +9,7 @@ import java.io.Serializable;
 public class PlcDevices implements Serializable {
     //private static final long serialVersionUID = 1L;
     //PLC站号
+    @TableId(value = "idplc_devices")
     private Integer idPlcDevice;
     //PLC M线圈
     private String plcMcol;
@@ -18,7 +20,7 @@ public class PlcDevices implements Serializable {
     //PLC状态
     private String plcStatus;
     //private String dtuid;
-
+    private String dtuSerialNumber;
     /**
      * plc的状态， 00 前进
      *            01 后退

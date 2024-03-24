@@ -2,13 +2,19 @@ package com.rxkj.server.handler;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.rxkj.entity.po.DtuDevices;
+import com.rxkj.entity.po.PlcDevices;
 import com.rxkj.entity.po.Sampler;
 import com.rxkj.mapper.DtuMap;
 import com.rxkj.mapper.SamplerMapper;
 import com.rxkj.message.*;
 import com.rxkj.service.DtuService;
 import com.rxkj.service.SamplerService;
+
 import com.rxkj.service.impl.DtuServiceImpl;
+import com.rxkj.service.impl.SamplerServiceImpl;
+
+import com.rxkj.service.impl.DtuServiceImpl;
+import com.rxkj.service.impl.PlcServiceImpl;
 import com.rxkj.service.impl.SamplerServiceImpl;
 import com.rxkj.util.AlexUtil;
 import com.rxkj.util.SpringUtils;
@@ -23,19 +29,22 @@ import java.util.*;
 
 @Slf4j
 public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
-
     private static DtuServiceImpl dtuService;
 //    @Autowired
 //    private SamplerMapper samplerMapper;
 
     private static SamplerServiceImpl samplerService;
     // private SamplerMapper samplerMapper;
+
+    private static PlcServiceImpl plcService;
+
 //    @Autowired
 //    private SamplerService samplerService;
 
     static {
         dtuService = SpringUtils.getBean(DtuServiceImpl.class);
         samplerService = SpringUtils.getBean(SamplerServiceImpl.class);
+        plcService = SpringUtils.getBean(PlcServiceImpl.class);
     }
 
     @Override
@@ -69,7 +78,7 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                  * */
                 // 判断dtu序列号是否存在于数据库，不存在的话存入数据库
                 String serialNumber = data;
-                Sampler serialNumberExists = samplerService.getOne(new QueryWrapper<Sampler>().eq("idsampler", serialNumber));
+                DtuDevices serialNumberExists = dtuService.getOne(new QueryWrapper<DtuDevices>().eq("serial_number", serialNumber));
                 // samplerMapper.selectList(null);
                 if (!Objects.isNull(serialNumberExists)) {// dtu在数据库
                     log.info("dtu上线:" + serialNumber);
@@ -84,11 +93,15 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                     Map<Integer, Integer> sampleMap = new HashMap<Integer, Integer>();
                     sampleMap = AlexUtil.sampleMap(sampleKey);
                     Sampler sampler = new Sampler();
+                    PlcDevices plcDevices = new PlcDevices();
+                    plcDevices.setDtuSerialNumber(serialNumber);
                     sampler.setDtuSerialNumber(serialNumber);
                     for (Integer i : sampleMap.keySet()) {
                         // System.out.println("key: " + i + " value: " + sampleMap.get(i));
                         sampler.setPlcDevicesid(i);
                         sampler.setIdsampler(sampleMap.get(i));
+                        plcDevices.setIdPlcDevice(i);
+                        plcService.save(plcDevices);
                         // samplerMapper.insert(sampler);
                         samplerService.save(sampler);
                     }
@@ -101,6 +114,7 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
 
                 // 判断dtu设备号是否在DtuMap中，如果不存在则将dtu设备号和plcId存入DtuMap
                 // dtumap保存dtu serialNumber和channel id,plc id和sampler id对应在0x06建立
+                //断开删除
                 DtuMap.addDtu(ctx.channel().id(), serialNumber);
                 /*if (getDtuByName("01") == null) {
                     addDtu("01", iccId);
