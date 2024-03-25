@@ -7,7 +7,7 @@ import lombok.Data;
 public class Sampler {
 
     //设备索引
-    private Integer idsampler;
+    private Integer samplerId;
     //进气阀(球阀C) 0:球阀关闭 1:球阀打开 -1:球阀异常
     private Integer inletValve;
     //排气阀(球阀B) 0:球阀关闭 1:球阀打开 -1:球阀异常
@@ -16,8 +16,8 @@ public class Sampler {
     private Integer sampleValve;
     //取样器状态
     private Integer samplerStatus;
-    //plc id
-    private Integer plcDevicesid;
+    //plc 站号
+    private Integer plcStationNo;
     //dtunumber
     private String dtuSerialNumber;
 
