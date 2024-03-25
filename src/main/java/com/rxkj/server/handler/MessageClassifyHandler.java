@@ -29,14 +29,6 @@ import java.util.*;
 
 @Slf4j
 public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
-    private static DtuServiceImpl dtuService;
-    private static SamplerServiceImpl samplerService;
-    private static PlcServiceImpl plcService;
-    static {
-        dtuService = SpringUtils.getBean(DtuServiceImpl.class);
-        samplerService = SpringUtils.getBean(SamplerServiceImpl.class);
-        plcService = SpringUtils.getBean(PlcServiceImpl.class);
-    }
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // 接收来自MessageCodecSharable的MessageA
@@ -56,47 +48,6 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 String iccId = data.substring(30, 70);
                 String dtuV = data.substring(70, 78);
                 // int sampleKey = imei.substring(9,10);
-                int sampleKey = Integer.parseInt(imei.substring(0, 6), 16);
-                //log.info("imeisub:" + imei.substring(0, 6));
-                //log.info("sampleKey:" + sampleKey);
-                /**
-                 * dtu连接后上报身份信息，以此身份信息和plc站号，煤粉取样器编号建立映射关系
-                 * [iccId:plc:煤粉取样器num]
-                 * 一个mac对应站号为01-08的plc,一台plc对应一台煤粉取样器，煤粉取样器号码唯一。
-                 * */
-                // 判断dtu序列号是否存在于数据库，不存在的话存入数据库
-                String serialNumber = data;
-                DtuDevices serialNumberExists = dtuService.getOne(new QueryWrapper<DtuDevices>().eq("serial_number", serialNumber));
-                if (!Objects.isNull(serialNumberExists)) {// dtu在数据库
-                    log.info("dtu上线:" + serialNumber);
-                } else {
-                    DtuDevices devices = new DtuDevices();
-                    devices.setUptime(new Date());
-                    devices.setSerialNumber(serialNumber);
-                    if (dtuService.save(devices)) {
-                        log.info("保存dtu:" + serialNumber);
-                    }
-                    // dtu第一次上线，使用sampleKey计算dtu对应的sample id并存入数据库
-                    Map<Integer, Integer> sampleMap = new HashMap<Integer, Integer>();
-                    sampleMap = AlexUtil.sampleMap(sampleKey);
-                    Sampler sampler = new Sampler();
-                    PlcDevices plcDevices = new PlcDevices();
-                    sampler.setDtuSerialNumber(serialNumber);
-                    plcDevices.setDtuSerialNumber(serialNumber);
-                    for (Integer i : sampleMap.keySet()) {
-                        // System.out.println("key: " + i + " value: " + sampleMap.get(i));
-                        sampler.setPlcStationNo(i);
-                        sampler.setSamplerId(sampleMap.get(i));
-                        plcDevices.setPlcStationNo(i);
-                        plcService.save(plcDevices);
-                        samplerService.save(sampler);
-                    }
-                }
-
-                /** 判断dtu设备号是否在DtuMap中，如果不存在则将dtu设备号和plcId存入DtuMap
-                * dtumap保存dtu serialNumber和channel id,plc id和sampler id映射由工具类计算*/
-                //dtu上线,更新DtuMap中的channel
-                DtuMap.addDtu(serialNumber,ctx.channel().id());
                 IdentityMessage identityMessage = new IdentityMessage(imei, iccId, dtuV);
                 log.info("identityMessage  " + identityMessage.getMessageType());
                 ctx.fireChannelRead(identityMessage);

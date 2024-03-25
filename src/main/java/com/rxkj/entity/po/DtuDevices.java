@@ -1,12 +1,18 @@
 package com.rxkj.entity.po;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+import java.lang.reflect.Type;
 import java.util.Date;
 
 @Data
 public class DtuDevices {
+    //DTU id
+    @TableId(type= IdType.AUTO)
+    private Long dtuId;
     //DTU序列号
     private String serialNumber;
     //DTU上线时间
