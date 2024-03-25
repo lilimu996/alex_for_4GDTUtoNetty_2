@@ -64,9 +64,10 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
             log.info("no channel!");
             return;
         }
-        log.info("DtuSerialNumber:",finalSampler.getDtuSerialNumber());
-        ChannelId channelId = Maps.filterKeys(DtuMap.getDtuMap(), v->v.equals(finalSampler.getDtuSerialNumber())).entrySet().iterator().next().getKey();
-        log.info("channelId:",channelId);
+        //log.info("DtuSerialNumber:",finalSampler.getDtuSerialNumber());
+       // ChannelId channelId = Maps.filterKeys(DtuMap.getDtuMap(), v->v.equals(finalSampler.getDtuSerialNumber())).entrySet().iterator().next().getKey();
+        //log.info("channelId:",channelId);
+        ChannelId channelId = DtuMap.getDtuByName(sampler.getDtuSerialNumber());
         Channel channel = null;
         channel = ChannelMap.getChannelByName(channelId);
         //log.info("iccId:" + iccId);
@@ -89,7 +90,7 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
                 controlMessage.setDeviceId("01");
             }
             //String data = controlMessage.getDeviceId() + controlMessage.getCommand();
-            String data = sampler.getPlcDevicesid().toString() + controlMessage.getCommand();
+            String data = sampler.getPlcStationNo().toString() + controlMessage.getCommand();
 
 //            String data = controlMessage.getDeviceId() + controlMessage.getCommand();
             // 这个地方好像没用

@@ -30,27 +30,15 @@ import java.util.*;
 @Slf4j
 public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
     private static DtuServiceImpl dtuService;
-//    @Autowired
-//    private SamplerMapper samplerMapper;
-
     private static SamplerServiceImpl samplerService;
-    // private SamplerMapper samplerMapper;
-
     private static PlcServiceImpl plcService;
-
-//    @Autowired
-//    private SamplerService samplerService;
-
     static {
         dtuService = SpringUtils.getBean(DtuServiceImpl.class);
         samplerService = SpringUtils.getBean(SamplerServiceImpl.class);
         plcService = SpringUtils.getBean(PlcServiceImpl.class);
     }
-
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // Process the incoming message here
-        // String processedMessage = processMessage((String) msg);
         // 接收来自MessageCodecSharable的MessageA
         MessageA messageA = (MessageA) msg;
         // 解析MessageA
@@ -69,8 +57,8 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 String dtuV = data.substring(70, 78);
                 // int sampleKey = imei.substring(9,10);
                 int sampleKey = Integer.parseInt(imei.substring(0, 6), 16);
-                log.info("imeisub:" + imei.substring(0, 6));
-                log.info("sampleKey:" + sampleKey);
+                //log.info("imeisub:" + imei.substring(0, 6));
+                //log.info("sampleKey:" + sampleKey);
                 /**
                  * dtu连接后上报身份信息，以此身份信息和plc站号，煤粉取样器编号建立映射关系
                  * [iccId:plc:煤粉取样器num]
@@ -79,7 +67,6 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                 // 判断dtu序列号是否存在于数据库，不存在的话存入数据库
                 String serialNumber = data;
                 DtuDevices serialNumberExists = dtuService.getOne(new QueryWrapper<DtuDevices>().eq("serial_number", serialNumber));
-                // samplerMapper.selectList(null);
                 if (!Objects.isNull(serialNumberExists)) {// dtu在数据库
                     log.info("dtu上线:" + serialNumber);
                 } else {
@@ -94,31 +81,22 @@ public class MessageClassifyHandler extends ChannelInboundHandlerAdapter {
                     sampleMap = AlexUtil.sampleMap(sampleKey);
                     Sampler sampler = new Sampler();
                     PlcDevices plcDevices = new PlcDevices();
-                    plcDevices.setDtuSerialNumber(serialNumber);
                     sampler.setDtuSerialNumber(serialNumber);
+                    plcDevices.setDtuSerialNumber(serialNumber);
                     for (Integer i : sampleMap.keySet()) {
                         // System.out.println("key: " + i + " value: " + sampleMap.get(i));
-                        sampler.setPlcDevicesid(i);
-                        sampler.setIdsampler(sampleMap.get(i));
-                        plcDevices.setIdPlcDevice(i);
+                        sampler.setPlcStationNo(i);
+                        sampler.setSamplerId(sampleMap.get(i));
+                        plcDevices.setPlcStationNo(i);
                         plcService.save(plcDevices);
-                        // samplerMapper.insert(sampler);
                         samplerService.save(sampler);
                     }
-//=======
-//                // 判断dtu设备号是否在DtuMap中，如果不存在则将dtu设备号和plcId存入DtuMap
-//                if (Objects.isNull(getDtuByName("01"))) {
-//                    addDtu("01", iccId);
-//>>>>>>> eb59669a8af619a73e838a85c8e8b51eaebb0a31
                 }
 
-                // 判断dtu设备号是否在DtuMap中，如果不存在则将dtu设备号和plcId存入DtuMap
-                // dtumap保存dtu serialNumber和channel id,plc id和sampler id对应在0x06建立
-                //断开删除
-                DtuMap.addDtu(ctx.channel().id(), serialNumber);
-                /*if (getDtuByName("01") == null) {
-                    addDtu("01", iccId);
-                }*/
+                /** 判断dtu设备号是否在DtuMap中，如果不存在则将dtu设备号和plcId存入DtuMap
+                * dtumap保存dtu serialNumber和channel id,plc id和sampler id映射由工具类计算*/
+                //dtu上线,更新DtuMap中的channel
+                DtuMap.addDtu(serialNumber,ctx.channel().id());
                 IdentityMessage identityMessage = new IdentityMessage(imei, iccId, dtuV);
                 log.info("identityMessage  " + identityMessage.getMessageType());
                 ctx.fireChannelRead(identityMessage);

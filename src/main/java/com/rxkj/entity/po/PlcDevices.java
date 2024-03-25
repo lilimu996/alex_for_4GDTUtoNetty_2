@@ -1,5 +1,6 @@
 package com.rxkj.entity.po;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
 public class PlcDevices implements Serializable {
     //private static final long serialVersionUID = 1L;
     //plc id
+    @TableId(type = IdType.AUTO)
     private long plcId;
     //PLC站号
     private Integer plcStationNo;
