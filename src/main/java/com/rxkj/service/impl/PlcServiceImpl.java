@@ -18,6 +18,7 @@ import com.rxkj.message.SseMessage;
 import com.rxkj.server.session.SessionFactory;
 import com.rxkj.service.SamplerService;
 import com.rxkj.service.PlcService;
+import com.rxkj.util.AlexUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 import lombok.extern.slf4j.Slf4j;
@@ -57,9 +58,10 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
         Sampler sampler = new Sampler();
         Integer samplerId = Integer.parseInt(controlMessage.getDeviceId(),10);
         QueryWrapper<Sampler> qw = new QueryWrapper<>();
-        qw.eq("idsampler",samplerId);
+        qw.eq("sampler_id",samplerId);
         sampler = samplerService.getOne(qw);
-        Sampler finalSampler = sampler;
+        log.info("sampler_id:"+sampler.getSamplerId()+",plc_station_on:"+sampler.getPlcStationNo());
+        //Sampler finalSampler = sampler;
         if(CollectionUtils.isEmpty(DtuMap.getDtuMap())){
             log.info("no channel!");
             return;
@@ -76,7 +78,7 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
 //        } else {
 //            channel = SessionFactory.getSession().getChannel(iccId);
 //        }
-        log.info("session:" + SessionFactory.getSession().toString());
+//        log.info("session:" + SessionFactory.getSession().toString());
         // 客户端在线
         if (!Objects.isNull(channel)) {
             // 回复客服端
@@ -90,7 +92,7 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
                 controlMessage.setDeviceId("01");
             }
             //String data = controlMessage.getDeviceId() + controlMessage.getCommand();
-            String data = sampler.getPlcStationNo().toString() + controlMessage.getCommand();
+            String data = String.format("%02d",sampler.getPlcStationNo()) + controlMessage.getCommand();
 
 //            String data = controlMessage.getDeviceId() + controlMessage.getCommand();
             // 这个地方好像没用
@@ -109,9 +111,9 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
             log.info("no Channel!");
         }
         // 异步写日志 后续可引入消息中间件
-        int deviceId = Integer.parseInt(controlMessage.getDeviceId());
-        String userNumbers = meiFenUser.getUser().getUserNumbers();
-        int command = Integer.parseInt(controlMessage.getCommand());
-        operationService.saveOperation(deviceId, userNumbers, command);
+//        int deviceId = Integer.parseInt(controlMessage.getDeviceId());
+//        String userNumbers = meiFenUser.getUser().getUserNumbers();
+//        int command = Integer.parseInt(controlMessage.getCommand());
+//        operationService.saveOperation(deviceId, userNumbers, command);
     }
 }
