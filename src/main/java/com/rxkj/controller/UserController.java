@@ -8,6 +8,7 @@ import com.rxkj.entity.bo.MeiFenUser;
 import com.rxkj.entity.dto.LoginDto;
 import com.rxkj.entity.po.Users;
 import com.rxkj.service.impl.UserServiceImpl;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,12 +39,14 @@ public class UserController {
     }
 
 
+    @PreAuthorize("hasAuthority('1')")
     @GetMapping("/selectAll")
     public R<List<Users>> selectAll() {
         List<Users> userList = userService.list(null);
         return R.success(userList);
     }
 
+    @PreAuthorize("hasAuthority('1')")
     @GetMapping("/selectPage")
     public R<IPage<Users>> selectPage(Integer current, Integer size) {
         IPage<Users> page = new Page<>(current, size);
@@ -51,17 +54,16 @@ public class UserController {
         return R.success(page);
     }
 
+    @PreAuthorize("hasAuthority('1')")
     @PostMapping("/addUser")
-    public R<String> addUser(@RequestBody Users user) {
+    public R addUser(@RequestBody Users user) {
         if (!checkStringNumbers(user.getUserNumbers(), 18)) {
             return R.error("Incorrectly formatted User ID number !!");
         }
-        if (userService.save(user)) {
-            return R.success("add success!");
-        }
-        return R.error("add fails!!");
+        return userService.addUser(user);
     }
 
+    /*
     @PostMapping("/updateUserById")
     public R<String> updateUserById(@RequestBody Users user) {
         if (!checkStringNumbers(user.getUserNumbers(), 18)) {
@@ -72,7 +74,9 @@ public class UserController {
         }
         return R.error("uptate fails!!");
     }
+    */
 
+    @PreAuthorize("hasAuthority('1')")
     @PostMapping("/deleteByName")
     public R<String> deleteUserByName(@RequestBody Users user) {
         QueryWrapper<Users> qw = new QueryWrapper<>();
@@ -83,6 +87,7 @@ public class UserController {
         return R.error("delete fails!!");
     }
 
+    @PreAuthorize("hasAuthority('1')")
     @PostMapping("/deleteById")
     public R<String> deleteUserById(@RequestBody Users user) {
         QueryWrapper<Users> qw = new QueryWrapper<>();

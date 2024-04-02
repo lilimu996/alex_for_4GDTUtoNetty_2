@@ -14,4 +14,5 @@ public interface UserService extends IService<Users> {
 
     R<String> logout(String userNumbers);
 
+    R addUser(Users user);
 }

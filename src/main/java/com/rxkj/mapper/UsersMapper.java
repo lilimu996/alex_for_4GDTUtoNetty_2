@@ -5,4 +5,6 @@ import com.rxkj.entity.po.Users;
 import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface UsersMapper extends BaseMapper<Users> {
+
+
 }
