@@ -1,19 +1,34 @@
 package com.rxkj.server.handler;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.rxkj.entity.po.Sampler;
 import com.rxkj.enums.CommandEnum;
 import com.rxkj.enums.CommandLengthEnum;
 import com.rxkj.enums.KeywordEnum;
 import com.rxkj.enums.TimeoutEnum;
 import com.rxkj.mapper.DeviceList;
+import com.rxkj.mapper.DtuMap;
 import com.rxkj.message.MessageA;
 import com.rxkj.message.SseMessage;
 import com.rxkj.message.StatusMessage;
+import com.rxkj.service.impl.DtuServiceImpl;
+import com.rxkj.service.impl.PlcServiceImpl;
+import com.rxkj.service.impl.SamplerServiceImpl;
+import com.rxkj.util.SpringUtils;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class PlcStatusHandler extends SimpleChannelInboundHandler<StatusMessage> {
+
+    private static SamplerServiceImpl samplerService;
+    static {
+        samplerService = SpringUtils.getBean(SamplerServiceImpl.class);
+    }
+
+
     /**
      * 状态信息作为心跳包周期性上传，如状态发生变化立即上传。
      *
@@ -24,8 +39,14 @@ public class PlcStatusHandler extends SimpleChannelInboundHandler<StatusMessage>
     protected void channelRead0(ChannelHandlerContext ctx, StatusMessage statusMessage) throws Exception {
         // todo:服务器回复指令0xFE
         log.info("statusMessage " + statusMessage);
-        int deviceId = Integer.parseInt(statusMessage.getDeviceId(),16);
-        SseMessage message = DeviceList.getDeviceVector().get(deviceId);
+        String plcStation = statusMessage.getDeviceId();
+        //将plc站号转换为煤粉取样器设备Id
+        String serialNumber = DtuMap.getDtuByChannelId(ctx.channel().id());
+        LambdaQueryWrapper<Sampler> lqw = new LambdaQueryWrapper<>();
+        lqw.gt(Sampler::getPlcStationNo,Integer.parseInt(plcStation,16)).gt(Sampler::getDtuSerialNumber,serialNumber);
+        Sampler sampler = samplerService.getOne(lqw);
+        int samplerId = sampler.getSamplerId();
+        SseMessage message = DeviceList.getDeviceVector().get(samplerId);
         // if ((message = (SseMessage) DeviceList.getDeviceVector().get(Integer.parseInt(statusMessage.getDeviceId()))) != null) {
         String coilAddress = statusMessage.getAuxiliaryCoils();
         String outputCoil = statusMessage.getOutputCoil();
@@ -50,7 +71,7 @@ public class PlcStatusHandler extends SimpleChannelInboundHandler<StatusMessage>
             message.setSampleValve(0);
             log.info("update ssemessage!!");
         }
-        DeviceList.getDeviceVector().set(deviceId, message);
+        DeviceList.getDeviceVector().set(samplerId, message);
         log.info("StatusMessage processing:" + DeviceList.getDeviceVector().size());
         // }
         // 回复客服端
