@@ -18,7 +18,7 @@ public class StatusHandler extends SimpleChannelInboundHandler<StatusMessage> {
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, StatusMessage statusMessage) throws Exception {
         SseMessage message = new SseMessage();
         if((message= (SseMessage) DeviceList.getDeviceVector().get(Integer.parseInt(statusMessage.getDeviceId())))!=null){
-            String coilAddress=statusMessage.getAuxiliaryCoils();
+            String coilAddress=statusMessage.getCoilAddress();
             String outputCoil=statusMessage.getOutputCoil();
             if(coilAddress.equals("040C")){
                 message.setInletValve(1);
