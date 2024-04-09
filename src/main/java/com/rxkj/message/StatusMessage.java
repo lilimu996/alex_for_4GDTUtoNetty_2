@@ -6,11 +6,11 @@ import lombok.Data;
 public class StatusMessage extends Message{
 
     private String deviceId;
-    private String auxiliaryCoils;
+    private String coilAddress;
     private String outputCoil;
-    public StatusMessage(String deviceId,String auxiliaryCoils,String outputCoil){
+    public StatusMessage(String deviceId, String coilAddress, String outputCoil){
         this.deviceId=deviceId;
-        this.auxiliaryCoils=auxiliaryCoils;
+        this.coilAddress = coilAddress;
         this.outputCoil=outputCoil;
     }
     public int getMessageType() {

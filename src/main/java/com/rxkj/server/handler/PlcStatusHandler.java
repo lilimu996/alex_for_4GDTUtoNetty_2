@@ -11,14 +11,13 @@ import com.rxkj.mapper.DtuMap;
 import com.rxkj.message.MessageA;
 import com.rxkj.message.SseMessage;
 import com.rxkj.message.StatusMessage;
-import com.rxkj.service.impl.DtuServiceImpl;
-import com.rxkj.service.impl.PlcServiceImpl;
 import com.rxkj.service.impl.SamplerServiceImpl;
 import com.rxkj.util.SpringUtils;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Objects;
 
 @Slf4j
 public class PlcStatusHandler extends SimpleChannelInboundHandler<StatusMessage> {
@@ -43,12 +42,19 @@ public class PlcStatusHandler extends SimpleChannelInboundHandler<StatusMessage>
         //将plc站号转换为煤粉取样器设备Id
         String serialNumber = DtuMap.getDtuByChannelId(ctx.channel().id());
         LambdaQueryWrapper<Sampler> lqw = new LambdaQueryWrapper<>();
-        lqw.gt(Sampler::getPlcStationNo,Integer.parseInt(plcStation,16)).gt(Sampler::getDtuSerialNumber,serialNumber);
+        //log.info("serialNumber:"+serialNumber);
+        //log.info("plcStation:"+plcStation);
+        lqw.eq(Sampler::getPlcStationNo,Integer.parseInt(plcStation,16)).eq(Sampler::getDtuSerialNumber,serialNumber);
+
         Sampler sampler = samplerService.getOne(lqw);
-        int samplerId = sampler.getSamplerId();
+        int samplerId = 255;
+        if(!Objects.isNull(sampler)){
+            samplerId = sampler.getSamplerId();
+        }
+        //int samplerId = 01;
         SseMessage message = DeviceList.getDeviceVector().get(samplerId);
         // if ((message = (SseMessage) DeviceList.getDeviceVector().get(Integer.parseInt(statusMessage.getDeviceId()))) != null) {
-        String coilAddress = statusMessage.getAuxiliaryCoils();
+        String coilAddress = statusMessage.getCoilAddress();
         String outputCoil = statusMessage.getOutputCoil();
         log.info("coilAddress:" + coilAddress);
         message.setDtuStatus(1);
