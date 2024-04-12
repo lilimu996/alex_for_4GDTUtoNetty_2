@@ -72,22 +72,6 @@ public class SseServiceImpl implements SseService {
      * @param sseTypes
      */
     @Override
-<<<<<<< HEAD
-<<<<<<< HEAD
-    public void sendMessage(SseMessage message) {
-=======
-    public void sendMessage(SseMessage message, SseTypesEnum sseTypes) {
->>>>>>> b65a5be (根据不同的请求类型推送sseMessage)
-        message.setTotal(sseEmitterMap.size());
-        R<SseMessage> r = new R<>();
-        //todo:根据传入的sseTypes向不同的连接发送消息
-        //从Redis查询,只关注特定的sseTypes
-        sseEmitterMap.forEach((uuid, sseEmiter) -> {
-            try {
-                r.setCode(1);
-                r.setData(message);
-<<<<<<< HEAD
-=======
     public <T> void sendMessage(T message, SseTypesEnum sseTypes) {
         R<T> r = new R<>();
         r.setCode(1);
@@ -99,27 +83,11 @@ public class SseServiceImpl implements SseService {
                 if(redisTemplate.opsForValue().get(uuid).equals(SseTypesEnum.PART_STATUS_CONNECT)){
                     ((SseMessage) message).setTotal(sseEmitterMap.size());
                     r.setData(message);
-=======
-                //消息只推送给特定的连接
-                if(redisTemplate.opsForValue().get(uuid).equals(SseTypesEnum.PART_STATUS_CONNECT)){
->>>>>>> b65a5be (根据不同的请求类型推送sseMessage)
                     sseEmiter.send(r, MediaType.APPLICATION_JSON);
                 }
                 if (redisTemplate.opsForValue().get(uuid).equals(SseTypesEnum.SAMPLE_CONNECT)){
                     sseEmiter.send(r, MediaType.APPLICATION_JSON);
                 }
-
-<<<<<<< HEAD
->>>>>>> 1329d0f (批量采样的SSE推送)
-=======
->>>>>>> b65a5be (根据不同的请求类型推送sseMessage)
-                /*
-                 sseEmitter.send(r, MediaType.APPLICATION_JSON);
-                 传递自定义类型
-                 SseEmitter.SseEventBuilder event = SseEmitter.event().id(String.valueOf(1)).name("message").data(message);
-                 sseEmitter.send(r, MediaType.TEXT_EVENT_STREAM);
-                */
-                //sseEmiter.send(r, MediaType.APPLICATION_JSON);
             } catch (Exception ex) {
                 sseEmiter.completeWithError(ex);
             }

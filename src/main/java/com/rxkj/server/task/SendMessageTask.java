@@ -1,15 +1,8 @@
 package com.rxkj.server.task;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 import com.rxkj.entity.vo.SamplerVo;
 import com.rxkj.enums.ExecutionStatus;
 import com.rxkj.enums.SseTypesEnum;
->>>>>>> 1329d0f (批量采样的SSE推送)
-=======
-import com.rxkj.enums.SseTypesEnum;
->>>>>>> b65a5be (根据不同的请求类型推送sseMessage)
 import com.rxkj.mapper.DeviceList;
 import com.rxkj.message.SseMessage;
 import com.rxkj.service.SseService;
