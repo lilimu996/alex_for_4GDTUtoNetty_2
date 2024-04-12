@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rxkj.entity.ControlMessage;
 import com.rxkj.entity.bo.MeiFenUser;
+import com.rxkj.entity.bo.SamplerGroup;
 import com.rxkj.entity.po.Sampler;
+import com.rxkj.entity.vo.SamplerVo;
+import com.rxkj.enums.ExecutionStatus;
 import com.rxkj.mapper.ChannelMap;
 import com.rxkj.mapper.DeviceList;
 import com.rxkj.mapper.DtuMap;
@@ -15,21 +18,21 @@ import com.rxkj.enums.CommandLengthEnum;
 import com.rxkj.enums.KeywordEnum;
 import com.rxkj.message.MessageA;
 import com.rxkj.message.SseMessage;
-import com.rxkj.server.session.SessionFactory;
 import com.rxkj.service.SamplerService;
 import com.rxkj.service.PlcService;
-import com.rxkj.util.AlexUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import com.google.common.collect.Maps;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
 @Service
@@ -39,6 +42,8 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
     OperationServiceImpl operationService;
     @Autowired
     private SamplerService samplerService;
+    @Resource
+    private RedisTemplate redisTemplate;
 
     @Override
     public void controller(ControlMessage controlMessage, MeiFenUser meiFenUser) {
@@ -116,4 +121,60 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
 //        int command = Integer.parseInt(controlMessage.getCommand());
 //        operationService.saveOperation(deviceId, userNumbers, command);
     }
+
+    /**
+     * @param groupList
+     * @param meiFenUser
+     */
+    @Override
+    public void batchSaple(List<SamplerGroup> groupList, MeiFenUser meiFenUser) {
+        //使用samplerGroup建立消息队列，并依次发送消息给DTU
+        //打印groupList
+        for (SamplerGroup samplerGroup : groupList) {
+            log.info("samplerGroup:" + samplerGroup.toString());
+        }
+        for (SamplerGroup samplerGroup : groupList) {
+            List<SamplerVo> samplerLists=samplerGroup.getSamplerList();
+            //在组内使用阻塞队列（BlockingQueue）进行顺序执行
+            BlockingQueue<SamplerVo> SamplerQueue = new LinkedBlockingQueue<>(samplerLists);
+            for (SamplerVo sampler:samplerLists) {
+                sampler.setSamplerStatus(ExecutionStatus.PENDING);
+                redisTemplate.opsForValue().set("dtu:batchSample:hash:"+sampler.getSamplerId(),sampler);
+            }
+            while(!SamplerQueue.isEmpty()) {
+                SamplerVo currentSampler = SamplerQueue.poll();
+                sendInstructionsToDevice(currentSampler);
+                // 等待设备完成通知后再进行下一步处理
+                waitForDeviceCompletion(currentSampler);
+            }
+        }
+    }
+    private void sendInstructionsToDevice(SamplerVo sampler) {
+        // todo:执行逻辑，根据设备类型和通信器发送指令
+        //sendcommandtodtu()
+        sampler.setSamplerStatus(ExecutionStatus.EXECUTING);
+        redisTemplate.opsForValue().set("dtu:batchSample:hash:"+sampler.getSamplerId(),sampler);
+    }
+    private void waitForDeviceCompletion(SamplerVo sampler) {
+        // 等待设备发出完成通知
+        // 此示例使用了带超时的循环（用实际通知替换）
+        long timeout = 5000; // 5 seconds
+        long startTime = System.currentTimeMillis();
+        while (sampler.getSamplerStatus() != ExecutionStatus.COMPLETED &&
+                (System.currentTimeMillis() - startTime) < timeout) {
+            // 短暂等待
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // 处理中断（可选）
+            }
+        }
+
+        if (sampler.getSamplerStatus() != ExecutionStatus.COMPLETED) {
+            // 处理超时情况（将设备标记为失败）
+        } else {
+            sampler.setSamplerStatus(ExecutionStatus.COMPLETED);
+        }
+    }
+
 }

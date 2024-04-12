@@ -3,6 +3,9 @@ package com.rxkj.controller;
 import com.rxkj.common.R;
 import com.rxkj.entity.ControlMessage;
 import com.rxkj.entity.bo.MeiFenUser;
+import com.rxkj.entity.bo.SamplerGroup;
+import com.rxkj.entity.po.Sampler;
+import com.rxkj.entity.vo.SamplerVo;
 import com.rxkj.message.StatusMessage;
 import com.rxkj.server.handler.AlexForDTUHandler;
 import com.rxkj.service.DtuService;
@@ -17,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -34,7 +39,11 @@ public class ApiController {
         plcService.controller(controlMessage, meiFenUser);
         return R.success(new StatusMessage("01", "02", "02"));
     }
-
+    @PostMapping("/batchSample")
+    public R batchSample(@AuthenticationPrincipal MeiFenUser meiFenUser, HttpServletRequest request,@RequestBody List<SamplerGroup> groupList){
+        plcService.batchSaple(groupList, meiFenUser);
+        return R.success();
+    }
     @RequestMapping("/alex")
     public String helloAlex() {
         return "hello alex!";
