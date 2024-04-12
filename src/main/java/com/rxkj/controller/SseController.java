@@ -1,14 +1,12 @@
 package com.rxkj.controller;
 
+import com.rxkj.enums.SseTypesEnum;
 import com.rxkj.message.SseMessage;
 import com.rxkj.service.SseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.UUID;
@@ -32,10 +30,11 @@ public class SseController {
      * @return
      */
     @RequestMapping(path = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter sse() {
+    public SseEmitter sse(@RequestParam("connectType") SseTypesEnum connectType) {
+        //log.info("sse id =="+connectType);
         String uuid = UUID.randomUUID().toString();
         log.info("新用户连接:{}", uuid);
-        return sseService.connect(uuid);
+        return sseService.connect(uuid,connectType);
     }
 
     /**
@@ -46,7 +45,7 @@ public class SseController {
     @RequestMapping("/sendMessage")
     @ResponseBody
     public void sendMessage(@RequestBody SseMessage message) {
-        sseService.sendMessage(message);
+        sseService.sendMessage(message, SseTypesEnum.PART_STATUS_CONNECT);
     }
 
 }
