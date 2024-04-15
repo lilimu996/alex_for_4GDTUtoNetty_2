@@ -184,7 +184,6 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
                 if(currentSampler.getStatus().equals(ExecutionStatus.READY)){
                     nextSampler = samplerQueue.poll();
                     currentSampler.setSampler((SamplerVo) redisTemplate.opsForValue().get(RedisKeys.BASE_BATCHSAMPLE+nextSampler.getSamplerId()));
-
                     sendInstructionsToDevice(currentSampler);
                     // 等待设备完成通知后再进行下一步处理
                     waitForDeviceCompletion(currentSampler);
@@ -210,7 +209,7 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
                 redisTemplate.opsForValue().set(RedisKeys.BASE_BATCHSAMPLE+sampler.getSamplerId(),sampler);
             }
             processingSampler.setGroupName(samplerGroup.getGroupName());
-            //初始化一个执行中的设备的队列
+            //初始化一个执行中的设备的队列,可放置空sampler,状态设置为complete
             redisTemplate.opsForValue().set(RedisKeys.BASE_CURRENTSAMPLE+ processingSampler.getGroupName(), processingSampler);
         }
     }
@@ -251,6 +250,7 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
 
         if (sampler.getSamplerStatus() != ExecutionStatus.COMPLETED) {
             // 处理超时情况（将设备标记为失败）
+            log.info("time out:"+sampler.getGroupName()+" "+sampler.getSamplerId());
             sampler.setSamplerStatus(ExecutionStatus.FAILED);
             redisTemplate.opsForValue().set(RedisKeys.BASE_BATCHSAMPLE+sampler.getSamplerId(),sampler);
         } else {
