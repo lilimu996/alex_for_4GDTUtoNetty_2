@@ -4,13 +4,9 @@ import com.rxkj.common.R;
 import com.rxkj.entity.ControlMessage;
 import com.rxkj.entity.bo.MeiFenUser;
 import com.rxkj.entity.bo.SamplerGroup;
-import com.rxkj.entity.po.Sampler;
-import com.rxkj.entity.vo.SamplerVo;
 import com.rxkj.message.StatusMessage;
 import com.rxkj.server.handler.AlexForDTUHandler;
-import com.rxkj.service.DtuService;
 import com.rxkj.service.PlcService;
-import com.rxkj.service.impl.DtuServiceImpl;
 import com.rxkj.util.AlexUtil;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +35,7 @@ public class ApiController {
     }
     @PostMapping("/batchSample")
     public R batchSample(@AuthenticationPrincipal MeiFenUser meiFenUser, HttpServletRequest request,@RequestBody List<SamplerGroup> groupList){
-        plcService.batchSaple(groupList, meiFenUser);
+        plcService.batchSample(groupList, meiFenUser);
         return R.success();
     }
     @RequestMapping("/alex")

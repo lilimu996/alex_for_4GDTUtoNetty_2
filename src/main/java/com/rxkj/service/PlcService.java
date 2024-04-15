@@ -7,6 +7,7 @@ import com.rxkj.entity.bo.SamplerGroup;
 import com.rxkj.entity.po.PlcDevices;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
 public interface PlcService extends IService<PlcDevices> {
     /**
@@ -16,8 +17,10 @@ public interface PlcService extends IService<PlcDevices> {
 
     /**
      * 批量采样接口
+     *
      * @param groupList
      * @param meiFenUser
+     * @return
      */
-    void batchSaple(List<SamplerGroup> groupList, MeiFenUser meiFenUser);
+    List<Future<String>> batchSample(List<SamplerGroup> groupList, MeiFenUser meiFenUser);
 }

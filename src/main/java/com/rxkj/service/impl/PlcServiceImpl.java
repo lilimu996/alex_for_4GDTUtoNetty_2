@@ -2,7 +2,9 @@ package com.rxkj.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.rxkj.common.RedisKeys;
 import com.rxkj.entity.ControlMessage;
+import com.rxkj.entity.bo.ProcessingSampler;
 import com.rxkj.entity.bo.MeiFenUser;
 import com.rxkj.entity.bo.SamplerGroup;
 import com.rxkj.entity.po.Sampler;
@@ -29,10 +31,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Set;
+import java.util.concurrent.*;
 
 @Slf4j
 @Service
@@ -125,41 +128,116 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
     /**
      * @param groupList
      * @param meiFenUser
+     * @return
      */
     @Override
-    public void batchSaple(List<SamplerGroup> groupList, MeiFenUser meiFenUser) {
+    public List<Future<String>> batchSample(List<SamplerGroup> groupList, MeiFenUser meiFenUser) {
         //使用samplerGroup建立消息队列，并依次发送消息给DTU
         //打印groupList
-        for (SamplerGroup samplerGroup : groupList) {
-            log.info("samplerGroup:" + samplerGroup.toString());
+//        for (SamplerGroup samplerGroup : groupList) {
+//            log.info("samplerGroup:" + samplerGroup.toString());
+//        }
+        //每个组建立一个阻塞队列,建立处理队列
+        createSamplerQueue(groupList);
+        Set<String> samplerQueueKeys = redisTemplate.keys(RedisKeys.BASE_SAMPLEQUEUE+"*");
+        Set<String> currentSampleKeys = redisTemplate.keys(RedisKeys.BASE_CURRENTSAMPLE+"*");
+//        log.info("samplerQueuekeys="+samplerQueueKeys+"\n"+"currentkeys="+currentSampleKeys);
+//        while(true){
+//            /**
+//             * check currentlist
+//             * 以事件组的方式通知quequetask
+//             * quequetask切换任务
+//             * 有两个任务，一个是queuetask，一个是currenttask
+//             * queuetask等待currenttask完成后执行，currenttask等待queuetask完成后执行
+//             */
+//        }
+        //为每个组提交一个更新Queue的任务
+        List<Callable<String>> callableTasks = new ArrayList<>();
+        for (String key : samplerQueueKeys) {
+            BlockingQueue<SamplerVo> samplerQueue = (BlockingQueue<SamplerVo>) redisTemplate.opsForValue().get(key);
+            //log.info("sampleQueue:"+samplerQueue);
+            Callable<String> callableTask = updataSamplerQuequeTask(samplerQueue,key.substring(key.length() - 1));
+            callableTasks.add(callableTask);
         }
-        for (SamplerGroup samplerGroup : groupList) {
+        //log.info("callableTasks:"+callableTasks);
+        ExecutorService executorService =
+                new ThreadPoolExecutor(6, 6, 0L, TimeUnit.MILLISECONDS,
+                        new LinkedBlockingQueue<Runnable>());
+        List<Future<String>> futures = null;
+        try {
+            futures = executorService.invokeAll(callableTasks);
+        } catch (InterruptedException e) {
+            log.info("error in PlcServiceImpl batchSample!!");
+        }
+        //log.info("futures"+futures);
+        executorService.shutdown();
+        return futures;
+
+    }
+
+    private Callable<String> updataSamplerQuequeTask(BlockingQueue<SamplerVo> samplerQueue,String groupName) {
+        Callable<String> callableTask = () -> {
+            TimeUnit.MILLISECONDS.sleep(300);
+            SamplerVo nextSampler = new SamplerVo();
+            while(!samplerQueue.isEmpty()){
+                ProcessingSampler currentSampler = (ProcessingSampler) redisTemplate.opsForValue().get(RedisKeys.BASE_CURRENTSAMPLE+groupName);
+                if(currentSampler.getStatus().equals(ExecutionStatus.READY)){
+                    nextSampler = samplerQueue.poll();
+                    currentSampler.setSampler((SamplerVo) redisTemplate.opsForValue().get(RedisKeys.BASE_BATCHSAMPLE+nextSampler.getSamplerId()));
+
+                    sendInstructionsToDevice(currentSampler);
+                    // 等待设备完成通知后再进行下一步处理
+                    waitForDeviceCompletion(currentSampler);
+                }
+            }
+            return "Task's execution";
+        };
+        return callableTask;
+    }
+
+    private void createSamplerQueue(List<SamplerGroup> groupList){
+        ProcessingSampler processingSampler = new ProcessingSampler();
+        processingSampler.setStatus(ExecutionStatus.READY);
+        for(SamplerGroup samplerGroup : groupList) {
             List<SamplerVo> samplerLists=samplerGroup.getSamplerList();
             //在组内使用阻塞队列（BlockingQueue）进行顺序执行
             BlockingQueue<SamplerVo> SamplerQueue = new LinkedBlockingQueue<>(samplerLists);
+            redisTemplate.opsForValue().set(RedisKeys.BASE_SAMPLEQUEUE+samplerGroup.getGroupName(),SamplerQueue);
+            //更新设备状态为PENDING
             for (SamplerVo sampler:samplerLists) {
                 sampler.setSamplerStatus(ExecutionStatus.PENDING);
-                redisTemplate.opsForValue().set("dtu:batchSample:hash:"+sampler.getSamplerId(),sampler);
+                sampler.setGroupName(samplerGroup.getGroupName());
+                redisTemplate.opsForValue().set(RedisKeys.BASE_BATCHSAMPLE+sampler.getSamplerId(),sampler);
             }
-            while(!SamplerQueue.isEmpty()) {
-                SamplerVo currentSampler = SamplerQueue.poll();
-                sendInstructionsToDevice(currentSampler);
-                // 等待设备完成通知后再进行下一步处理
-                waitForDeviceCompletion(currentSampler);
-            }
+            processingSampler.setGroupName(samplerGroup.getGroupName());
+            //初始化一个执行中的设备的队列
+            redisTemplate.opsForValue().set(RedisKeys.BASE_CURRENTSAMPLE+ processingSampler.getGroupName(), processingSampler);
         }
     }
-    private void sendInstructionsToDevice(SamplerVo sampler) {
+    private void updateCurrentSampler(ProcessingSampler processingSampler){
+        BlockingQueue<SamplerVo> samplerQueue =(BlockingQueue<SamplerVo>)redisTemplate.opsForValue().get(RedisKeys.BASE_SAMPLEQUEUE+ processingSampler.getGroupName());
+        if(samplerQueue.isEmpty()){
+            return ;
+        }
+        processingSampler.setSampler(samplerQueue.poll());
+        sendInstructionsToDevice(processingSampler);
+        processingSampler.setStatus(ExecutionStatus.PENDING);
+        redisTemplate.opsForValue().set(RedisKeys.BASE_CURRENTSAMPLE+ processingSampler.getGroupName(), processingSampler);
+    }
+    private void sendInstructionsToDevice(ProcessingSampler processingSampler) {
         // todo:执行逻辑，根据设备类型和通信器发送指令
         //sendcommandtodtu()
+        SamplerVo sampler = processingSampler.getSampler();
         sampler.setSamplerStatus(ExecutionStatus.EXECUTING);
-        redisTemplate.opsForValue().set("dtu:batchSample:hash:"+sampler.getSamplerId(),sampler);
+        redisTemplate.opsForValue().set(RedisKeys.BASE_BATCHSAMPLE+sampler.getSamplerId(),sampler);
     }
-    private void waitForDeviceCompletion(SamplerVo sampler) {
+    private void waitForDeviceCompletion(ProcessingSampler processingSampler) {
         // 等待设备发出完成通知
         // 此示例使用了带超时的循环（用实际通知替换）
         long timeout = 5000; // 5 seconds
         long startTime = System.currentTimeMillis();
+        Integer samplerId = processingSampler.getSampler().getSamplerId();
+        SamplerVo sampler = (SamplerVo) redisTemplate.opsForValue().get(RedisKeys.BASE_BATCHSAMPLE+samplerId);
         while (sampler.getSamplerStatus() != ExecutionStatus.COMPLETED &&
                 (System.currentTimeMillis() - startTime) < timeout) {
             // 短暂等待
@@ -168,13 +246,16 @@ public class PlcServiceImpl extends ServiceImpl<PlcMapper, PlcDevices> implement
             } catch (InterruptedException e) {
                 // 处理中断（可选）
             }
+            sampler = (SamplerVo) redisTemplate.opsForValue().get(RedisKeys.BASE_BATCHSAMPLE+samplerId);
         }
 
         if (sampler.getSamplerStatus() != ExecutionStatus.COMPLETED) {
             // 处理超时情况（将设备标记为失败）
+            sampler.setSamplerStatus(ExecutionStatus.FAILED);
+            redisTemplate.opsForValue().set(RedisKeys.BASE_BATCHSAMPLE+sampler.getSamplerId(),sampler);
         } else {
-            sampler.setSamplerStatus(ExecutionStatus.COMPLETED);
-        }
+            processingSampler.getSampler().setSamplerStatus(ExecutionStatus.COMPLETED);
+            redisTemplate.opsForValue().set(RedisKeys.BASE_BATCHSAMPLE+sampler.getSamplerId(),sampler);        }
     }
 
 }
