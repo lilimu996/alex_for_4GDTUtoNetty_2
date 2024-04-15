@@ -3,6 +3,7 @@ package com.rxkj.controller;
 import com.rxkj.enums.SseTypesEnum;
 import com.rxkj.message.SseMessage;
 import com.rxkj.service.SseService;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -30,7 +31,7 @@ public class SseController {
      * @return
      */
     @RequestMapping(path = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter sse(@RequestParam("connectType") SseTypesEnum connectType) {
+    public SseEmitter sse(@RequestParam("connectType") Integer connectType) {
         //log.info("sse id =="+connectType);
         String uuid = UUID.randomUUID().toString();
         log.info("新用户连接:{}", uuid);

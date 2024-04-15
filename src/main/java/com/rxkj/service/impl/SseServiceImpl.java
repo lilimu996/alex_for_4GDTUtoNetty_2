@@ -1,6 +1,7 @@
 package com.rxkj.service.impl;
 
 import com.rxkj.common.R;
+import com.rxkj.common.RedisKeys;
 import com.rxkj.enums.SseTypesEnum;
 import com.rxkj.message.SseMessage;
 import com.rxkj.service.SseService;
@@ -34,7 +35,7 @@ public class SseServiceImpl implements SseService {
      * @return
      */
     @Override
-    public SseEmitter connect(String uuid, SseTypesEnum connectType) {
+    public SseEmitter connect(String uuid, Integer connectType) {
         SseEmitter sseEmitter = new SseEmitter(-1L);
         // 连接成功需要返回数据，否则会出现待处理状态
         try {
@@ -45,21 +46,21 @@ public class SseServiceImpl implements SseService {
         // 连接断开
         sseEmitter.onCompletion(() -> {
             sseEmitterMap.remove(uuid);
-            redisTemplate.opsForValue().getOperations().delete(uuid);
+            redisTemplate.opsForValue().getOperations().delete(RedisKeys.BASE_SSECONNECT+uuid);
         });
         // 连接超时
         sseEmitter.onTimeout(() -> {
             sseEmitterMap.remove(uuid);
-            redisTemplate.opsForValue().getOperations().delete(uuid);
+            redisTemplate.opsForValue().getOperations().delete(RedisKeys.BASE_SSECONNECT+uuid);
         });
         // 连接报错
         sseEmitter.onError((throwable) -> {
             sseEmitterMap.remove(uuid);
-            redisTemplate.opsForValue().getOperations().delete(uuid);
+            redisTemplate.opsForValue().getOperations().delete(RedisKeys.BASE_SSECONNECT+uuid);
         });
         //todo:将uuid和connectType缓存
         sseEmitterMap.put(uuid, sseEmitter);
-        redisTemplate.opsForValue().set(uuid,connectType);
+        redisTemplate.opsForValue().set(RedisKeys.BASE_SSECONNECT+uuid,connectType);
 
 
         return sseEmitter;
@@ -79,13 +80,16 @@ public class SseServiceImpl implements SseService {
         //从Redis查询,只关注特定的sseTypes
         sseEmitterMap.forEach((uuid, sseEmiter) -> {
             try {
+//                log.info("redisT = "+((SseTypesEnum)redisTemplate.opsForValue().get(uuid)).value);
+//                log.info("SseT = "+SseTypesEnum.PART_STATUS_CONNECT.value);
+
                 //消息只推送给特定的连接
-                if(redisTemplate.opsForValue().get(uuid).equals(SseTypesEnum.PART_STATUS_CONNECT)){
+                if((redisTemplate.opsForValue().get(RedisKeys.BASE_SSECONNECT+uuid)) == SseTypesEnum.PART_STATUS_CONNECT.value){
                     ((SseMessage) message).setTotal(sseEmitterMap.size());
                     r.setData(message);
                     sseEmiter.send(r, MediaType.APPLICATION_JSON);
                 }
-                if (redisTemplate.opsForValue().get(uuid).equals(SseTypesEnum.SAMPLE_CONNECT)){
+                if (redisTemplate.opsForValue().get(RedisKeys.BASE_SSECONNECT) == SseTypesEnum.SAMPLE_CONNECT.value){
                     sseEmiter.send(r, MediaType.APPLICATION_JSON);
                 }
             } catch (Exception ex) {

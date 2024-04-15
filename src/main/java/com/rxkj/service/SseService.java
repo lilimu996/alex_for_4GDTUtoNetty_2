@@ -2,6 +2,7 @@ package com.rxkj.service;
 
 import com.rxkj.enums.SseTypesEnum;
 import com.rxkj.message.SseMessage;
+import io.swagger.models.auth.In;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 public interface SseService {
@@ -11,7 +12,7 @@ public interface SseService {
      * @param uuid
      * @return
      */
-    SseEmitter connect(String uuid, SseTypesEnum connectType);
+    SseEmitter connect(String uuid, Integer connectType);
 
     /**
      * 发送消息
