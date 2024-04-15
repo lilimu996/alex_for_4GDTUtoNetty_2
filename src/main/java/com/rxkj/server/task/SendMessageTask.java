@@ -1,5 +1,6 @@
 package com.rxkj.server.task;
 
+import com.rxkj.common.RedisKeys;
 import com.rxkj.entity.vo.SamplerVo;
 import com.rxkj.enums.ExecutionStatus;
 import com.rxkj.enums.SseTypesEnum;
@@ -27,7 +28,6 @@ public class SendMessageTask {
     private SseService sseService;
     @Resource
     private RedisTemplate redisTemplate;
-
     /**
      * 定时执行 秒 分 时 日 月 周
      */
@@ -46,10 +46,9 @@ public class SendMessageTask {
         // log.info("SendMessageTask:"+DeviceList.getDeviceVector().size());
         if (DeviceList.getDeviceVector().size() != 0) {
             /**
+             * 发送Sampler部件状态
              *遍历设备Sse消息队列，并把队列中的每个消息推送至前端
              */
-
-
             DeviceList.getDeviceVector().forEach(new Consumer<SseMessage>() {
                 /**
                  * Performs this operation on the given argument.
@@ -64,8 +63,14 @@ public class SendMessageTask {
         } else {
             sseService.sendMessage(message, SseTypesEnum.PART_STATUS_CONNECT);
         }
-        checkAndSendUpdates();
+    }
 
+    /**
+     * 发送sampler状态
+     */
+    @Scheduled(cron = "*/2 * * * * *")// 间隔2S
+    public void sendSamplerMessage(){
+        checkAndSendUpdates();
     }
     public void checkAndSendUpdates() {
 
@@ -74,19 +79,17 @@ public class SendMessageTask {
             //更新设备状态(暂定)
             // 根据设备通信更新状态的逻辑(在Handler中执行)
             // 发送SSE通知
-            sseService.sendMessage(sampler, SseTypesEnum.SAMPLE_CONNECT);
+            sseService.sendMessageWithSampler(sampler, SseTypesEnum.SAMPLE_CONNECT);
 //                SseEmitter.Event event = buildSseEvent(device);
 //                sseEmitter.send(event);
         }
     }
     public List<SamplerVo> findAllByStatusIn(){
         List<SamplerVo> samplerList = new ArrayList<>();
-        Set<String> keys = redisTemplate.keys("dtu:batchSample:hash:");
+        Set<String> keys = redisTemplate.keys(RedisKeys.BASE_BATCHSAMPLE+"*");
         for(String key:keys){
             SamplerVo sampler = (SamplerVo) redisTemplate.opsForValue().get(key);
-            if(sampler.getSamplerStatus().equals(ExecutionStatus.COMPLETED)||sampler.getSamplerStatus().equals(ExecutionStatus.COMPLETED)){
-                samplerList.add(sampler);
-            }
+            samplerList.add(sampler);
         }
         return samplerList;
     }

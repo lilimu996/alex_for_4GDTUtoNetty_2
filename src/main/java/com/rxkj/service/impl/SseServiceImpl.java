@@ -76,24 +76,41 @@ public class SseServiceImpl implements SseService {
     public <T> void sendMessage(T message, SseTypesEnum sseTypes) {
         R<T> r = new R<>();
         r.setCode(1);
+        ((SseMessage) message).setTotal(sseEmitterMap.size());
+        r.setData(message);
         //todo:根据传入的sseTypes向不同的连接发送消息
         //从Redis查询,只关注特定的sseTypes
         sseEmitterMap.forEach((uuid, sseEmiter) -> {
             try {
-//                log.info("redisT = "+((SseTypesEnum)redisTemplate.opsForValue().get(uuid)).value);
-//                log.info("SseT = "+SseTypesEnum.PART_STATUS_CONNECT.value);
-
                 //消息只推送给特定的连接
                 if((redisTemplate.opsForValue().get(RedisKeys.BASE_SSECONNECT+uuid)) == SseTypesEnum.PART_STATUS_CONNECT.value){
-                    ((SseMessage) message).setTotal(sseEmitterMap.size());
-                    r.setData(message);
-                    sseEmiter.send(r, MediaType.APPLICATION_JSON);
-                }
-                if (redisTemplate.opsForValue().get(RedisKeys.BASE_SSECONNECT) == SseTypesEnum.SAMPLE_CONNECT.value){
                     sseEmiter.send(r, MediaType.APPLICATION_JSON);
                 }
             } catch (Exception ex) {
                 sseEmiter.completeWithError(ex);
+            }
+        });
+    }
+
+    /**
+     * 发送消息
+     *
+     * @param message
+     * @param sseTypes
+     */
+    @Override
+    public <T> void sendMessageWithSampler(T message, SseTypesEnum sseTypes) {
+        R<T> r = new R<>();
+        r.setCode(1);
+        r.setData(message);
+        sseEmitterMap.forEach((uuid, sseEmiter) ->{
+            if (redisTemplate.opsForValue().get(RedisKeys.BASE_SSECONNECT+uuid) == SseTypesEnum.SAMPLE_CONNECT.value){
+                r.setData(message);
+                try {
+                    sseEmiter.send(r, MediaType.APPLICATION_JSON);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }

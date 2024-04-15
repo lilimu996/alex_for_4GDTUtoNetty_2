@@ -21,5 +21,12 @@ public interface SseService {
      * @param sseTypes
      */
     <T> void sendMessage(T message, SseTypesEnum sseTypes);
+    /**
+     * 发送消息
+     *
+     * @param message
+     * @param sseTypes
+     */
+    <T> void sendMessageWithSampler(T message, SseTypesEnum sseTypes);
 
 }
