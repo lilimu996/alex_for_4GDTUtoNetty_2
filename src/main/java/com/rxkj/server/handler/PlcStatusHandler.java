@@ -56,7 +56,9 @@ public class PlcStatusHandler extends SimpleChannelInboundHandler<StatusMessage>
         // if ((message = (SseMessage) DeviceList.getDeviceVector().get(Integer.parseInt(statusMessage.getDeviceId()))) != null) {
         String coilAddress = statusMessage.getCoilAddress();
         String outputCoil = statusMessage.getOutputCoil();
-        log.info("coilAddress:" + coilAddress);
+        if(!coilAddress.equals("FFFF")) {
+            log.info("coilAddress:" + coilAddress);
+        }
         message.setDtuStatus(1);
         if (coilAddress.equals("040C")) {
             message.setInletValve(1);
@@ -78,7 +80,7 @@ public class PlcStatusHandler extends SimpleChannelInboundHandler<StatusMessage>
             log.info("update ssemessage!!");
         }
         DeviceList.getDeviceVector().set(samplerId, message);
-        log.info("StatusMessage processing:" + DeviceList.getDeviceVector().size());
+        // log.info("StatusMessage processing:" + DeviceList.getDeviceVector().size());
         // }
         // 回复客服端
         // log.info("CommandEnum "+CommandEnum.UPLOAD_COMMAND.value);
@@ -86,7 +88,7 @@ public class PlcStatusHandler extends SimpleChannelInboundHandler<StatusMessage>
         String checksum = "0000";
         String data = CommandEnum.UPLOAD_STATUS_COMMAND.value + TimeoutEnum.COMMON_TIMEOUT.value;
         MessageA messageA = new MessageA(KeywordEnum.CHANNEL_HEAD.value, CommandLengthEnum.RESPONSE_COMMAND.value, checksum, CommandEnum.RESPONSE_COMMAND.value, data);
-        log.info("responsemsg  " + messageA);
+        // log.info("responsemsg  " + messageA);
         ctx.writeAndFlush(messageA);
     }
 }
