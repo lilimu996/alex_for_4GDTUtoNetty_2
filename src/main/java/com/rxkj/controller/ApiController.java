@@ -11,6 +11,8 @@ import com.rxkj.util.AlexUtil;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +20,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
+@EnableAsync
 @RestController
 @RequestMapping("api")
 public class ApiController {
@@ -35,7 +39,9 @@ public class ApiController {
     }
     @PostMapping("/batchSample")
     public R batchSample(@AuthenticationPrincipal MeiFenUser meiFenUser, HttpServletRequest request,@RequestBody List<SamplerGroup> groupList){
-        plcService.batchSample(groupList, meiFenUser);
+        CompletableFuture.runAsync(() -> {
+            plcService.batchSample(groupList, meiFenUser);
+        });
         return R.success();
     }
     @RequestMapping("/alex")
