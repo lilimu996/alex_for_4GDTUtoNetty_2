@@ -79,6 +79,8 @@ public class PlcStatusHandler extends SimpleChannelInboundHandler<StatusMessage>
             message.setSampleValve(0);
             log.info("update ssemessage!!");
         }
+        //todo:前进限位0404
+        //todo:后退限位0405
         DeviceList.getDeviceVector().set(samplerId, message);
         // log.info("StatusMessage processing:" + DeviceList.getDeviceVector().size());
         // }
