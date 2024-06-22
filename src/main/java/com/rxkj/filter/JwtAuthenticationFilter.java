@@ -5,6 +5,7 @@ import com.rxkj.entity.bo.MeiFenUser;
 import com.rxkj.util.Commons;
 import com.rxkj.util.JwtUtil;
 import com.rxkj.util.RedisUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -20,36 +21,38 @@ import java.util.Map;
 import java.util.Objects;
 
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Resource
-    private final RedisUtil redisUtil;
+	@Resource
+	private final RedisUtil redisUtil;
 
-    public JwtAuthenticationFilter(RedisUtil redisUtil) {
-        this.redisUtil = redisUtil;
-    }
+	public JwtAuthenticationFilter(RedisUtil redisUtil) {
+		this.redisUtil = redisUtil;
+	}
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader("MeiFen-token");
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+		String token = request.getHeader("Authorization");
 
-        if (Objects.isNull(token)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+		if (Objects.isNull(token)) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 
+		Map<String, Claim> claims = JwtUtil.getClaims(token);
 
-        Map<String, Claim> claims = JwtUtil.getClaims(token);
+		String userNumbers = claims.get("userNumbers").asString();
 
-        String userNumbers = claims.get("userNumbers").asString();
+		MeiFenUser meiFenUser = redisUtil.getObject(Commons.REDIS_KEY_MEI_FEN_USER + userNumbers, MeiFenUser.class);
 
-        MeiFenUser meiFenUser = redisUtil.getObject(Commons.REDIS_KEY_MEI_FEN_USER + userNumbers, MeiFenUser.class);
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(meiFenUser, null, meiFenUser.getAuthorities());
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(meiFenUser, null, meiFenUser.getAuthorities());
+		log.info("权限:{}", meiFenUser.getAuthorities().toString());
 
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+		SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-        filterChain.doFilter(request, response);
+		filterChain.doFilter(request, response);
 
-    }
+	}
 }

@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         csrf().disable()
                 // 不通过Session获取SecurityContext
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                // 对于登录接口 允许匿名访问
+                // 对于登录接口 只允许匿名访问
                 .antMatchers("/user/login").anonymous()
 
                 // 测试的时候可将下行取消注释
